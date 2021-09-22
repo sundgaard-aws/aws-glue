@@ -21,8 +21,6 @@ logger.info("starting glue-demo-iac job...")
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
-
-
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
