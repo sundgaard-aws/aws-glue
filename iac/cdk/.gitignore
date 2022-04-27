@@ -1,0 +1,18 @@
+bin
+build
+package-lock.json
+cdk-context.json
+local
+
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+cdk.context.json
+
+# Parcel default cache directory
+.parcel-cache
