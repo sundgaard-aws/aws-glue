@@ -66,14 +66,14 @@ logger.info("reading data from s3 to a dynamic frame...")
 inputObject="s3://trade-input-data/fx-trades.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
+logger.info("logging dynamic frame as json...")
+dynamicFrame.show()
 logger.info("done reading data from S3.")
 # end - read from s3
 
 
 # trim data frame
 logger.info("trimming data frame...")
-logger.info("logging dynamic frame as json...")
-dynamicFrame.show()
 logger.info("logging data frame as text...")
 dataFrame = dynamicFrame.toDF()
 dataFrame.show()
@@ -101,7 +101,7 @@ logger.info("done applying mapping rules.")
 
 
 # write to db
-logger.info("doing db stuff...")
+logger.info("loading data to target data store...")
 jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
 connection_mysql8_options = {
     "url": jdbcURL,
@@ -115,7 +115,7 @@ connection_mysql8_options = {
 #mysqlDynamicFrame = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
 logger.info("writing data to database...")
 DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "DataSink0")
-logger.info("wrote data to database.")
+logger.info("done loading data to target data store.")
 # end - write to db
 
 

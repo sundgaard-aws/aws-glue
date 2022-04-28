@@ -59,13 +59,25 @@ logger.info(secret['username'])
 
 
 # read from s3
-logger.info("reading data from s3 to a dynamic frame...")
-inputObject="s3://trade-input-data/fx-trades.csv"
+logger.info("reading JSON data from s3 to a dynamic frame...")
+inputObject="s3://trade-input-data/fx-trades.json"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
-dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
+dynamicFrame = glueContext.create_dynamic_frame.from_options(
+    format_options={"multiline": False},
+    connection_type="s3",
+    format="json",
+    connection_options={
+        "paths": [inputObject],
+        "recurse": True,
+    },
+    transformation_ctx = "dynamicFrame"
+)
 logger.info("logging dynamic frame as json...")
 dynamicFrame.show()
-logger.info("done reading data from S3.")
+logger.info("logging data frame as text...")
+dataFrame = dynamicFrame.toDF()
+dataFrame.show()
+logger.info("done reading JSON data from S3.")
 # end - read from s3
 
 

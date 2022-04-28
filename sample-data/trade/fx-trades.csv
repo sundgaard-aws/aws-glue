@@ -1,0 +1,5 @@
+trade_type,amount,ccy,trade_date,trader_id,cpty_id
+FXSPOT, 3500000, GBP, 23-05-2021, 3, null
+FXSPOT, 4000000, GBP, 21-01-2021, 7, null
+FXSPOT, 1300000, GBP, 03-07-2021, 4, null
+FXSPOT, 8700000, GBP, 14-09-2021, 9, null

@@ -5,7 +5,7 @@ Empty job just with context and logging
 Get secret from AWS secrets manager
 
 # Step3
-Read data from S3
+Read CSV data from S3
 
 # Step4
 Trim data in source data frame
@@ -15,3 +15,6 @@ Apply mappings
 
 # Step6
 Write to target DB
+
+# lab7
+Read JSON data from S3
