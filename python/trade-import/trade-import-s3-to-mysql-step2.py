@@ -46,7 +46,7 @@ def get_secret(name, version=None):
 # main job part
 
 # get secret
-dbSourceSecretName = "glue-demo-sql-server-on-ec2-secret"
+dbSourceSecretName = "dev/trade-import/trade-mart-secret"
 logger.info("getting secret for source db...")
 secretsManagerEntry = get_secret(dbSourceSecretName)
 logger.info("here comes the SecretString...")

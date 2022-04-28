@@ -8,6 +8,8 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from botocore.exceptions import ClientError
+from pyspark.sql.functions import *
+from awsglue.dynamicframe import DynamicFrame
 
 # define logging
 MSG_FORMAT = '%(asctime)s %(levelname)s %(name)s: %(message)s'
@@ -44,7 +46,7 @@ job.init(args['JOB_NAME'], args)
 # main job part
 
 # get secret
-dbSourceSecretName = "glue-demo-sql-server-on-ec2-secret"
+dbSourceSecretName = "dev/trade-import/trade-mart-secret"
 logger.info("getting secret for source db...")
 secretsManagerEntry = get_secret(dbSourceSecretName)
 logger.info("here comes the SecretString...")
@@ -60,11 +62,35 @@ logger.info(secret['username'])
 
 # read from s3
 logger.info("doing s3 stuff...")
-inputObject="s3://aiml-input-data/car_data.csv"
+inputObject="s3://trade-input-data/fx-trades.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
-DataSource0 = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
+dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
 logger.info("applying mapping to S3 data...")
-Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("car", "string", "make", "string"), ("year", "long", "year", "string"), ("engine_hp", "double", "hp", "string"), ("price", "string", "price", "string")], transformation_ctx = "Transform0")
+#trade_type,amount,ccy,trade_date,trader_id,cpty_id 
+#Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("trade_type", "string", "trade_type", "string"), ("amount", "double", "trade_amount", "double"), ("ccy", "string", "trade_ccy", "string"), ("trade_date", "date", "trade_date", "date")], transformation_ctx = "Transform0")
+
+# trim data frame
+logger.info("logging dynamic frame as json...")
+dynamicFrame.show()
+logger.info("logging data frame as text...")
+dataFrame = dynamicFrame.toDF()
+dataFrame.show()
+logger.info("strip whitespaces and show data frame as text...")
+trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', trim(dataFrame.trade_date)).withColumn('trader_id', trim(dataFrame.trader_id))
+trimmedDataFrame.show()
+trimmedDynamicFrame = DynamicFrame.fromDF(trimmedDataFrame, glueContext, "trimmedDynamicFrame")
+logger.info("logging trimmed dynamic frame as json...")
+trimmedDynamicFrame.show()
+# end - trim data frame
+
+
+Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
+    ("trade_type", "string", "trade_type", "string")
+    ,("amount", "string", "trade_amount", "decimal")
+    ,("ccy", "string", "trade_ccy", "string")
+    #,("trade_date", "string", "trade_date", "string")
+    ,("trader_id", "string", "trader_id", "int")
+], transformation_ctx = "Transform0")
 logger.info("done reading and prepping data from S3.")
 # end - read from s3
 
@@ -74,7 +100,7 @@ logger.info("doing db stuff...")
 jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
 connection_mysql8_options = {
     "url": jdbcURL,
-    "dbtable": "car",
+    "dbtable": "trade",
     "user": secret['username'],
     "password": secret['password'],
     "customJdbcDriverS3Path": "s3://glue-demo-s3-to-mysql/mysql-connector-java-8.0.25.jar",
