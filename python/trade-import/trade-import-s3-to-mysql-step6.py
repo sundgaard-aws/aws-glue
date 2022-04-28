@@ -62,15 +62,15 @@ logger.info(secret['username'])
 
 
 # read from s3
-logger.info("reading data from s3 to a dynamic frame...")
+logger.info("doing s3 stuff...")
 inputObject="s3://trade-input-data/fx-trades.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
-logger.info("done reading data from S3.")
-# end - read from s3
+logger.info("applying mapping to S3 data...")
+#trade_type,amount,ccy,trade_date,trader_id,cpty_id 
+#Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("trade_type", "string", "trade_type", "string"), ("amount", "double", "trade_amount", "double"), ("ccy", "string", "trade_ccy", "string"), ("trade_date", "date", "trade_date", "date")], transformation_ctx = "Transform0")
 
 # trim data frame
-logger.info("trimming data frame...")
 logger.info("logging dynamic frame as json...")
 dynamicFrame.show()
 logger.info("logging data frame as text...")
@@ -83,8 +83,39 @@ trimmedDataFrame.show()
 trimmedDynamicFrame = DynamicFrame.fromDF(trimmedDataFrame, glueContext, "trimmedDynamicFrame")
 logger.info("logging trimmed dynamic frame as json...")
 trimmedDynamicFrame.show()
-logger.info("done trimming data frame.")
 # end - trim data frame
+
+
+Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
+    ("trade_type", "string", "trade_type", "string")
+    ,("amount", "string", "trade_amount", "decimal")
+    ,("ccy", "string", "trade_ccy", "string")
+    ,("trader_id", "string", "trader_id", "int")
+    ,("trade_date", "timestamp", "trade_date", "timestamp")
+], transformation_ctx = "Transform0")
+logger.info("done reading and prepping data from S3.")
+# end - read from s3
+
+
+# write to db
+logger.info("doing db stuff...")
+jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
+connection_mysql8_options = {
+    "url": jdbcURL,
+    "dbtable": "trade",
+    "user": secret['username'],
+    "password": secret['password'],
+    "customJdbcDriverS3Path": "s3://glue-demo-s3-to-mysql/mysql-connector-java-8.0.25.jar",
+    "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
+
+# Read from JDBC databases with custom driver
+logger.info("creating dataframe...")
+df_mysql8 = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
+logger.info("writing data to database...")
+DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "DataSink0")
+logger.info("wrote data to database.")
+# end - write to db
+
 
 # end - main job part
 

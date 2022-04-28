@@ -59,13 +59,11 @@ logger.info(secret['username'])
 
 
 # read from s3
-logger.info("doing s3 stuff...")
+logger.info("reading data from s3 to a dynamic frame...")
 inputObject="s3://aiml-input-data/car_data.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 DataSource0 = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
-logger.info("applying mapping to S3 data...")
-Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("car", "string", "make", "string"), ("year", "long", "year", "string"), ("engine_hp", "double", "hp", "string"), ("price", "string", "price", "string")], transformation_ctx = "Transform0")
-logger.info("done reading and prepping data from S3.")
+logger.info("done reading data from S3.")
 # end - read from s3
 
 

@@ -69,6 +69,7 @@ dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"
 logger.info("done reading data from S3.")
 # end - read from s3
 
+
 # trim data frame
 logger.info("trimming data frame...")
 logger.info("logging dynamic frame as json...")
@@ -85,6 +86,19 @@ logger.info("logging trimmed dynamic frame as json...")
 trimmedDynamicFrame.show()
 logger.info("done trimming data frame.")
 # end - trim data frame
+
+
+# apply mapping rules
+logger.info("applying mapping rules...")
+Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
+    ("trade_type", "string", "trade_type", "string")
+    ,("amount", "string", "trade_amount", "decimal")
+    ,("ccy", "string", "trade_ccy", "string")
+    ,("trader_id", "string", "trader_id", "int")
+    ,("trade_date", "timestamp", "trade_date", "timestamp")
+], transformation_ctx = "Transform0")
+logger.info("done applying mapping rules.")
+# end - apply mapping rules
 
 # end - main job part
 
