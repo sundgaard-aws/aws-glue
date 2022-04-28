@@ -78,7 +78,6 @@ logger.info("logging data frame as text...")
 dataFrame = dynamicFrame.toDF()
 dataFrame.show()
 logger.info("strip whitespaces and show data frame as text...")
-#trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', datetime.strptime(trim(dataFrame.trade_date), '%d-%m-%Y')).withColumn('trader_id', trim(dataFrame.trader_id))
 trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', to_timestamp(trim(dataFrame.trade_date), 'dd-MM-yyyy')).withColumn('trader_id', trim(dataFrame.trader_id))
 trimmedDataFrame.show()
 trimmedDynamicFrame = DynamicFrame.fromDF(trimmedDataFrame, glueContext, "trimmedDynamicFrame")
@@ -113,8 +112,7 @@ connection_mysql8_options = {
     "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
 
 # Read from JDBC databases with custom driver
-logger.info("creating dataframe...")
-df_mysql8 = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
+#mysqlDynamicFrame = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
 logger.info("writing data to database...")
 DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "DataSink0")
 logger.info("wrote data to database.")
