@@ -1,3 +1,5 @@
 local
 bin
 drivers
+*large.csv
+*huge.csv

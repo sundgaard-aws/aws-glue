@@ -30,3 +30,6 @@ https://www.datacamp.com/community/tutorials/reading-writing-files-python
 
 # MySQL
 mysql -h trade-mart.cb3aiosvufiu.eu-west-1.rds.amazonaws.com -u user1 -pXXX tradedb
+
+# DynamoDB
+https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html#aws-glue-programming-etl-connect-dynamodb
