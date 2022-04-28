@@ -10,6 +10,7 @@ from awsglue.job import Job
 from botocore.exceptions import ClientError
 from pyspark.sql.functions import *
 from awsglue.dynamicframe import DynamicFrame
+from datetime import datetime
 
 # define logging
 MSG_FORMAT = '%(asctime)s %(levelname)s %(name)s: %(message)s'
@@ -76,7 +77,8 @@ logger.info("logging data frame as text...")
 dataFrame = dynamicFrame.toDF()
 dataFrame.show()
 logger.info("strip whitespaces and show data frame as text...")
-trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', trim(dataFrame.trade_date)).withColumn('trader_id', trim(dataFrame.trader_id))
+#trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', datetime.strptime(trim(dataFrame.trade_date), '%d-%m-%Y')).withColumn('trader_id', trim(dataFrame.trader_id))
+trimmedDataFrame = dataFrame.withColumn('amount', trim(dataFrame.amount)).withColumn('ccy', trim(dataFrame.ccy)).withColumn('trade_date', to_timestamp(trim(dataFrame.trade_date), 'dd-MM-yyyy')).withColumn('trader_id', trim(dataFrame.trader_id))
 trimmedDataFrame.show()
 trimmedDynamicFrame = DynamicFrame.fromDF(trimmedDataFrame, glueContext, "trimmedDynamicFrame")
 logger.info("logging trimmed dynamic frame as json...")
@@ -88,8 +90,8 @@ Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
     ("trade_type", "string", "trade_type", "string")
     ,("amount", "string", "trade_amount", "decimal")
     ,("ccy", "string", "trade_ccy", "string")
-    #,("trade_date", "string", "trade_date", "string")
     ,("trader_id", "string", "trader_id", "int")
+    ,("trade_date", "timestamp", "trade_date", "timestamp")
 ], transformation_ctx = "Transform0")
 logger.info("done reading and prepping data from S3.")
 # end - read from s3
