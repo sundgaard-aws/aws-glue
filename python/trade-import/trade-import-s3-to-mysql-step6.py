@@ -62,15 +62,16 @@ logger.info(secret['username'])
 
 
 # read from s3
-logger.info("doing s3 stuff...")
+logger.info("reading data from s3 to a dynamic frame...")
 inputObject="s3://trade-input-data/fx-trades.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
-logger.info("applying mapping to S3 data...")
-#trade_type,amount,ccy,trade_date,trader_id,cpty_id 
-#Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("trade_type", "string", "trade_type", "string"), ("amount", "double", "trade_amount", "double"), ("ccy", "string", "trade_ccy", "string"), ("trade_date", "date", "trade_date", "date")], transformation_ctx = "Transform0")
+logger.info("done reading data from S3.")
+# end - read from s3
+
 
 # trim data frame
+logger.info("trimming data frame...")
 logger.info("logging dynamic frame as json...")
 dynamicFrame.show()
 logger.info("logging data frame as text...")
@@ -83,9 +84,12 @@ trimmedDataFrame.show()
 trimmedDynamicFrame = DynamicFrame.fromDF(trimmedDataFrame, glueContext, "trimmedDynamicFrame")
 logger.info("logging trimmed dynamic frame as json...")
 trimmedDynamicFrame.show()
+logger.info("done trimming data frame.")
 # end - trim data frame
 
 
+# apply mapping rules
+logger.info("applying mapping rules...")
 Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
     ("trade_type", "string", "trade_type", "string")
     ,("amount", "string", "trade_amount", "decimal")
@@ -93,8 +97,8 @@ Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
     ,("trader_id", "string", "trader_id", "int")
     ,("trade_date", "timestamp", "trade_date", "timestamp")
 ], transformation_ctx = "Transform0")
-logger.info("done reading and prepping data from S3.")
-# end - read from s3
+logger.info("done applying mapping rules.")
+# end - apply mapping rules
 
 
 # write to db
