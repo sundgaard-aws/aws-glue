@@ -33,3 +33,4 @@ mysql -h trade-mart.cb3aiosvufiu.eu-west-1.rds.amazonaws.com -u user1 -pXXX trad
 
 # DynamoDB
 https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html#aws-glue-programming-etl-connect-dynamodb
+https://aws.amazon.com/premiumsupport/knowledge-center/glue-dynamodb-etl-optimization/
