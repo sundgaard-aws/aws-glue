@@ -36,7 +36,7 @@ def get_secret(name, version=None):
 # end - functions
 
 # start job
-logger.info("starting lab10...")
+logger.info("starting lab11...")
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 logger.info("creating spark context...")
@@ -69,7 +69,7 @@ logger.info(secret['username'])
 
 # read from s3
 logger.info("reading data from s3 to a dynamic frame...")
-inputObject="s3://trade-input-data/fx-trades.csv"
+inputObject="s3://trade-input-data/fx-trades-large.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
 logger.info("logging dynamic frame as json...")
@@ -138,4 +138,4 @@ logger.info("done loading data to target data store.")
 
 logger.info("committing...")
 job.commit()
-logger.info("ended lab10.")
+logger.info("ended lab11.")
