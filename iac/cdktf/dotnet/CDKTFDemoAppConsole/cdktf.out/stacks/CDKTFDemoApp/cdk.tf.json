@@ -1,0 +1,53 @@
+{
+  "//": {
+    "metadata": {
+      "backend": "local",
+      "stackName": "CDKTFDemoApp",
+      "version": "0.11.0-pre.34"
+    },
+    "outputs": {
+      "CDKTFDemoApp": {
+        "public_ip": "CDKTFDemoApp_publicip_20C1441D"
+      }
+    }
+  },
+  "output": {
+    "CDKTFDemoApp_publicip_20C1441D": {
+      "value": "${aws_instance.CDKTFDemoApp_compute_905F1C01.public_ip}"
+    }
+  },
+  "provider": {
+    "aws": [
+      {
+        "region": "eu-west-1"
+      }
+    ]
+  },
+  "resource": {
+    "aws_instance": {
+      "CDKTFDemoApp_compute_905F1C01": {
+        "//": {
+          "metadata": {
+            "path": "CDKTFDemoApp/compute",
+            "uniqueId": "CDKTFDemoApp_compute_905F1C01"
+          }
+        },
+        "ami": "ami-01456a894f71116f2",
+        "instance_type": "t2.micro"
+      }
+    }
+  },
+  "terraform": {
+    "backend": {
+      "local": {
+        "path": "C:\\github\\aws-glue\\iac\\cdktf\\dotnet\\CDKTFDemoAppConsole\\terraform.CDKTFDemoApp.tfstate"
+      }
+    },
+    "required_providers": {
+      "aws": {
+        "source": "aws",
+        "version": "4.12.0"
+      }
+    }
+  }
+}

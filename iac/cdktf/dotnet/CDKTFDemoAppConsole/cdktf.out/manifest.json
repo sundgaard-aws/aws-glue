@@ -1,0 +1,13 @@
+{
+  "version": "0.11.0-pre.34",
+  "stacks": {
+    "CDKTFDemoApp": {
+      "name": "CDKTFDemoApp",
+      "constructPath": "CDKTFDemoApp",
+      "workingDirectory": "stacks\\CDKTFDemoApp",
+      "synthesizedStackPath": "stacks\\CDKTFDemoApp\\cdk.tf.json",
+      "annotations": [],
+      "dependencies": []
+    }
+  }
+}

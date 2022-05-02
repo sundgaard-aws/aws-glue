@@ -5,10 +5,9 @@ import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Duration, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { HttpMethod } from 'aws-cdk-lib/aws-events';
-import {Code, GlueVersion, IJob, Job, JobExecutable, PythonVersion} from '@aws-cdk/aws-glue-alpha';
+import {Code, GlueVersion, IJob, Job, JobExecutable, PythonVersion, WorkerType} from '@aws-cdk/aws-glue-alpha';
 
 export class ComputeStack extends Stack {
-    private runtime:Runtime = Runtime.NODEJS_12_X;    
     private ssmHelper = new SSMHelper();
     public apiRole:IRole;
 
@@ -16,7 +15,7 @@ export class ComputeStack extends Stack {
         super(scope, id, props);
 
         this.apiRole = this.buildExecutionRole();
-        this.createJob(apiSecurityGroup, vpc);
+        this.createJob(this.apiRole);
     }
 
     private buildExecutionRole(): IRole {
@@ -42,14 +41,19 @@ export class ComputeStack extends Stack {
         return role;
     }      
 
-    private createJob(): IJob {
-        var job = new Job(this, MetaData.PREFIX+"sql-server-to-s3", {
-            jobName: MetaData.PREFIX+"sql-server-to-s3",
+    private createJob(apiRole:IRole): IJob {
+        var job = new Job(this, MetaData.PREFIX+"lab1", {
+            jobName: MetaData.PREFIX+"lab1",            
             executable: JobExecutable.pythonStreaming({
                 glueVersion: GlueVersion.V2_0,
-                pythonVersion: PythonVersion.THREE,
-                script: Code.fromAsset("../../python/simple.py")
+                pythonVersion: PythonVersion.THREE,                
+                script: Code.fromAsset("../../python/trade-import/lab1.py")
             }),
+            workerCount:2,
+            maxRetries:0,
+            workerType: WorkerType.G_1X,
+            timeout: Duration.minutes(20),
+            role: apiRole
         });
 
         return job;

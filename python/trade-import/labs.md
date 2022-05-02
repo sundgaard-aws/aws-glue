@@ -28,6 +28,12 @@ Import large data set 20M+ rows
 # lab 10 - writing to a NoSQL DB
 Write data to DynamoDB instead of MySQL
 
+# lab 11
+
+# lab 12
+
+# lab 13
+
 # lab 25 - bookmarks
 - Enable and define bookmark
 - Read existing data

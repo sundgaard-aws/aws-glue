@@ -33,11 +33,11 @@ export class NetworkStack extends Stack {
     private createVPC():IVpc {
         // Link: https://blog.codecentric.de/en/2019/09/aws-cdk-create-custom-vpc/
         var vpc = new Vpc(this, MetaData.PREFIX+"vpc", {
-            cidr: "10.30.0.0/16", subnetConfiguration: [
-                { cidrMask: 24, name: MetaData.PREFIX+"private-sne", subnetType: SubnetType.PRIVATE_ISOLATED },
+            cidr: "10.90.0.0/16", subnetConfiguration: [
+                { cidrMask: 24, name: MetaData.PREFIX+"private-sne", subnetType: SubnetType.PRIVATE_WITH_NAT },
                 { cidrMask: 25, name: MetaData.PREFIX+"public-sne", subnetType: SubnetType.PUBLIC }
             ],
-            natGateways: 0,
+            natGateways: 1,
             maxAzs: 2
         });
         
@@ -84,7 +84,7 @@ export class NetworkStack extends Stack {
             vpc: vpc,
             networkAclName: MetaData.PREFIX+"private-nacl",
             subnetSelection: {
-                subnetType: SubnetType.PRIVATE_ISOLATED
+                subnetType: SubnetType.PRIVATE_WITH_NAT
             }
         });
         privateNacl.addEntry(MetaData.PREFIX+"private-nacl-allow-all-inbound", {

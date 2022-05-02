@@ -1,4 +1,4 @@
 export class MetaData {
-  public static readonly PREFIX:string = "aws-glue-demo-";
+  public static readonly PREFIX:string = "acc-day-glue-";
   public static readonly NAME:string = "Name";
 }
