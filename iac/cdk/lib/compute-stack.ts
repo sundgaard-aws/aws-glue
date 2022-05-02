@@ -5,7 +5,7 @@ import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { HttpMethod } from 'aws-cdk-lib/aws-events';
-import {Code, GlueVersion, IJob, Job, JobExecutable, PythonVersion, WorkerType} from '@aws-cdk/aws-glue-alpha';
+import {Code, Connection, ConnectionType, GlueVersion, IJob, Job, JobExecutable, PythonVersion, WorkerType} from '@aws-cdk/aws-glue-alpha';
 import { LoggingLevel } from 'aws-cdk-lib/aws-chatbot';
 import { ILogGroup, LogGroup } from 'aws-cdk-lib/aws-logs';
 
@@ -19,6 +19,7 @@ export class ComputeStack extends Stack {
         this.glueExecutionRole = this.buildGlueExecutionRole();
         var codePathRoot = "../../python/trade-import/";
         var logGroup = this.createGlueLogGroup(this.glueExecutionRole);
+        //var mySQLDBConn = this.createGlueMySQLDBConn(vpc);
         this.createSimpleETLJob(this.glueExecutionRole, "lab1", codePathRoot+"lab1.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, "lab2", codePathRoot+"lab2.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, "lab3", codePathRoot+"lab3.py", logGroup);
@@ -30,6 +31,15 @@ export class ComputeStack extends Stack {
         this.createSimpleETLJob(this.glueExecutionRole, "lab9", codePathRoot+"lab9.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab10", codePathRoot+"lab10.py");*/
     } 
+
+    private createGlueMySQLDBConn(vpc:IVpc) {
+        var mySQLConn = new Connection(this, MetaData.PREFIX+"mysql-db-conn", {
+            type: ConnectionType.JDBC,
+            connectionName: MetaData.PREFIX+"mysql-db-conn",
+            //securityGroups: ??,
+            subnet: vpc.privateSubnets[0]
+        });
+    }
     
     private createGlueLogGroup(glueExecutionRole: IRole): ILogGroup {
         var logGroup = new LogGroup(this, MetaData.PREFIX+"glue-logs", {
@@ -56,7 +66,8 @@ export class ComputeStack extends Stack {
             timeout: Duration.minutes(20),
             role: glueExecutionRole,
             continuousLogging: {enabled:true, quiet:false, logGroup: logGroup},
-            enableProfilingMetrics:true            
+            enableProfilingMetrics:true,
+            //connections: []
         });        
         Tags.of(job).add(MetaData.NAME, MetaData.PREFIX+jobPostFix);
         return job;

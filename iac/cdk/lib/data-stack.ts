@@ -17,11 +17,38 @@ export class DataStack extends Stack {
     constructor(scope: Construct, id: string, vpc: IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole, props?: StackProps) {
         super(scope, id, props);
         this.glueExecutionRole = glueExecutionRole;
-        this.createInputBucket(vpc, rdsMySQLSecurityGroup, glueExecutionRole);
+        this.createInputBucket(glueExecutionRole);
+        this.createGlueDriverBucket(glueExecutionRole);
         this.createDynamoDBTradeTable();
         this.createRDSMySQLDB(vpc, rdsMySQLSecurityGroup, this.glueExecutionRole);
         //this.createRDSSecret();
     }
+    
+    private createGlueDriverBucket(glueExecutionRole: IRole) {
+        var name = MetaData.PREFIX+"driver-bucket";
+        var bucket = new Bucket(this, name, {
+            bucketName:name,
+            blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
+            encryption: BucketEncryption.S3_MANAGED
+        });
+        Tags.of(bucket).add(MetaData.NAME, name);
+        bucket.grantRead(glueExecutionRole);
+        var stringParam = new SSMHelper().createSSMParameter(this, MetaData.PREFIX+"driver-bucket-name", bucket.bucketName, ParameterType.STRING);
+        stringParam.grantRead(glueExecutionRole);
+    }
+
+    private createInputBucket(glueExecutionRole: IRole) {
+        var name = MetaData.PREFIX+"trade-input-bucket";
+        var bucket = new Bucket(this, name, {
+            bucketName:name,
+            blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
+            encryption: BucketEncryption.S3_MANAGED
+        });
+        Tags.of(bucket).add(MetaData.NAME, name);
+        bucket.grantRead(glueExecutionRole);
+        var stringParam = new SSMHelper().createSSMParameter(this, MetaData.PREFIX+"trade-input-bucket-name", bucket.bucketName, ParameterType.STRING);
+        stringParam.grantRead(glueExecutionRole);
+    }     
     
     private createRDSMySQLDB(vpc:IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole) {
         var name = MetaData.PREFIX+"trade-mart-rds";
@@ -48,18 +75,7 @@ export class DataStack extends Stack {
             partitionKey: {name: "trade_id", type: AttributeType.STRING}
             ,removalPolicy: RemovalPolicy.DESTROY
         });
-    }
-
-    private createInputBucket(vpc:IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole) {
-        var name = MetaData.PREFIX+"trade-input-bucket";
-        var bucket = new Bucket(this, name, {
-            bucketName:name,
-            blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
-            encryption: BucketEncryption.S3_MANAGED
-        });
-        Tags.of(bucket).add(MetaData.NAME, name);
-        bucket.grantRead(glueExecutionRole)
-    }    
+    }   
 
     private createRDSSecret() {
         var name = MetaData.PREFIX+"rds-secret";

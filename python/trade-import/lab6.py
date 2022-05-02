@@ -107,13 +107,14 @@ logger.info("done applying mapping rules.")
 
 # write to db
 logger.info("loading data to target data store...")
+glueDriverBucketName = getParameter("acc-day-glue-driver-bucket-name")["Parameter"]["Value"]
 jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
 connection_mysql8_options = {
     "url": jdbcURL,
     "dbtable": "trade",
     "user": secret['username'],
     "password": secret['password'],
-    "customJdbcDriverS3Path": "s3://glue-demo-s3-to-mysql/mysql-connector-java-8.0.25.jar",
+    "customJdbcDriverS3Path": "s3://"+glueDriverBucketName+"/mysql-connector-java-8.0.25.jar",
     "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
 
 # Read from JDBC databases with custom driver
