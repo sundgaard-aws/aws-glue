@@ -17,7 +17,7 @@ logger = logging.getLogger("default-logger")
 logger.setLevel(logging.INFO)
 
 # functions
-def get_secret(name, version=None):
+def getSecret(name, version=None):
     secrets_client = boto3.client("secretsmanager")
     kwargs = {'SecretId': name}
     if version is not None:
@@ -49,9 +49,9 @@ job.init(args['JOB_NAME'], args)
 # main job part
 
 # get secret
-rdsSecretName = getParameter("acc-day-glue-trade-mart-secret-name")
+rdsSecretName = getParameter("acc-day-glue-trade-mart-secret-name")["Parameter"]["Value"]
 logger.info("getting secret for source db with name ["+rdsSecretName+"]...")
-secretsManagerEntry = get_secret(rdsSecretName)
+secretsManagerEntry = getSecret(rdsSecretName)
 logger.info("here comes the SecretString...")
 logger.info(secretsManagerEntry['SecretString'])
 logger.info("db/username")
