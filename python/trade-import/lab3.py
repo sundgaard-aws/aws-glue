@@ -24,10 +24,15 @@ def get_secret(name, version=None):
         kwargs['VersionStage'] = version
     response = secrets_client.get_secret_value(**kwargs)
     return response
+
+def getParameter(name):
+    ssmClient = boto3.client("ssm")
+    response = ssmClient.get_parameter(Name=name, WithDecryption=True)    
+    return response
 # end - functions
 
 # start job
-logger.info("starting trade-import-s3-to-mysql job...")
+logger.info("starting lab3...")
 ## @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 logger.info("creating spark context...")
@@ -44,9 +49,9 @@ job.init(args['JOB_NAME'], args)
 # main job part
 
 # get secret
-dbSourceSecretName = "dev/trade-import/trade-mart-secret"
-logger.info("getting secret for source db...")
-secretsManagerEntry = get_secret(dbSourceSecretName)
+rdsSecretName = getParameter("acc-day-glue-trade-mart-secret-name")
+logger.info("getting secret for source db with name ["+rdsSecretName+"]...")
+secretsManagerEntry = get_secret(rdsSecretName)
 logger.info("here comes the SecretString...")
 logger.info(secretsManagerEntry['SecretString'])
 logger.info("db/username")
@@ -60,7 +65,7 @@ logger.info(secret['username'])
 
 # read from s3
 logger.info("reading data from s3 to a dynamic frame...")
-inputObject="s3://trade-input-data/fx-trades.csv"
+inputObject="s3://acc-day-glue-trade-input-bucket/fx-trades.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
 logger.info("logging dynamic frame as json...")
@@ -74,4 +79,4 @@ logger.info("done reading data from S3.")
 
 logger.info("committing...")
 job.commit()
-logger.info("ended trade-import-s3-to-mysql job.")
+logger.info("ended lab3.")

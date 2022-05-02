@@ -5,14 +5,16 @@ import { MetaData } from './meta-data';
 
 export class NetworkStack extends Stack {
     public Vpc:IVpc;
-    public ApiSecurityGroup: ISecurityGroup;
+    //public ApiSecurityGroup: ISecurityGroup;
+    public MySQLSecurityGroup: ISecurityGroup;
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
         this.Vpc = this.createVPC();
         this.createEndpoints(this.Vpc);
         //this.createRDSSecurityGroup();
-        this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
+       // this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
+        this.MySQLSecurityGroup = this.createMySQLSecurityGroup(this.Vpc);
     }
     
     private createEndpoints(vpc: IVpc) {
@@ -130,6 +132,21 @@ export class NetworkStack extends Stack {
         //this.metaData.APISecurityGroup = securityGroup;
         return securityGroup;
     } 
+
+    private createMySQLSecurityGroup(vpc: IVpc): ISecurityGroup {
+        var postFix = "rds-mysql-sg";
+        var securityGroup = new SecurityGroup(this, MetaData.PREFIX+postFix, {
+            vpc: vpc,
+            securityGroupName: MetaData.PREFIX+postFix,
+            description: MetaData.PREFIX+postFix,
+            allowAllOutbound: true
+        });
+        
+        //securityGroup.connections.allowTo(this.metaData.RDSSecurityGroup, Port.tcp(3306), "Lambda to RDS");
+        Tags.of(securityGroup).add(MetaData.NAME, MetaData.PREFIX+postFix);
+        //this.metaData.APISecurityGroup = securityGroup;
+        return securityGroup;
+    }
     
     private tagVPCResources(vpc: Vpc) {
         Tags.of(vpc).add(MetaData.NAME, MetaData.PREFIX+"vpc");

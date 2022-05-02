@@ -15,5 +15,5 @@ var props = {env: {account: process.env["CDK_DEFAULT_ACCOUNT"], region: region }
 var metaData = new MetaData();
 
 var networkStack = new NetworkStack(app, MetaData.PREFIX+"network-stack", props);
-var computeStack = new ComputeStack(app, MetaData.PREFIX+"compute-stack", networkStack.Vpc, networkStack.ApiSecurityGroup, props);
-new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc, computeStack.apiRole, props);
+var computeStack = new ComputeStack(app, MetaData.PREFIX+"compute-stack", networkStack.Vpc, props);
+new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc,  networkStack.MySQLSecurityGroup, computeStack.glueExecutionRole, props);
