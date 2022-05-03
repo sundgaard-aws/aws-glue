@@ -145,7 +145,7 @@ logger.info("writing data to database...")
 DataSink0 = glueContext.write_dynamic_frame_from_options(
     frame=mappedFrame,
     connection_type="dynamodb",
-    connection_options={"dynamodb.output.tableName": "trades",
+    connection_options={"dynamodb.output.tableName": "acc-day-glue-trades",
         "dynamodb.throughput.write.percent": "1.0"
     },
     transformation_ctx = "DataSink0"

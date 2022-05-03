@@ -19,7 +19,7 @@ export class DataStack extends Stack {
         this.glueExecutionRole = glueExecutionRole;
         this.createInputBucket(glueExecutionRole);
         this.createGlueDriverBucket(glueExecutionRole);
-        this.createDynamoDBTradeTable();
+        this.createDynamoDBTradeTable(glueExecutionRole);
         this.createRDSMySQLDB(vpc, rdsMySQLSecurityGroup, this.glueExecutionRole);
         //this.createRDSSecret();
     }
@@ -57,6 +57,7 @@ export class DataStack extends Stack {
             vpc: vpc,
             //vpcSubnets: vpc.selectSubnets(),
             databaseName: "tradedb",
+            instanceIdentifier: name,
             instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
             securityGroups: [rdsMySQLSecurityGroup]
         });
@@ -67,14 +68,15 @@ export class DataStack extends Stack {
         }
     }
 
-    private createDynamoDBTradeTable() {
+    private createDynamoDBTradeTable(glueExecutionRole:IRole) {
         var name = MetaData.PREFIX+"trades";
-        new Table(this, name, {
+        var dynamoDBTable = new Table(this, name, {
             tableName: name,
             billingMode: BillingMode.PAY_PER_REQUEST,
             partitionKey: {name: "trade_id", type: AttributeType.STRING}
             ,removalPolicy: RemovalPolicy.DESTROY
         });
+        dynamoDBTable.grantReadWriteData(glueExecutionRole)
     }   
 
     private createRDSSecret() {

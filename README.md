@@ -1,4 +1,14 @@
 # aws-glue
+
+# prerequisite
+Login to event engine
+Login to AWS
+Start cloud console
+git clone https://github.com/sundgaard-aws/aws-glue.git
+cd aws-glue/iac/cdk
+yum install typescript
+sudo npm install -g aws-cdk@latest
+
 Create security group for job
 Open inbound ports for all TCP on that SG
 Create NAT GW or VPCE as IGW won't work (https://aws.amazon.com/premiumsupport/knowledge-center/glue-test-connection-failed/)

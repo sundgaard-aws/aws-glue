@@ -73,7 +73,7 @@ export class ComputeStack extends Stack {
             maxRetries:0,
             maxConcurrentRuns:1,            
             workerType: WorkerType.G_1X,
-            timeout: Duration.minutes(20),
+            timeout: Duration.minutes(19),
             role: glueExecutionRole,
             continuousLogging: {enabled:true, quiet:false, logGroup: logGroup},
             enableProfilingMetrics:true,
@@ -102,7 +102,7 @@ export class ComputeStack extends Stack {
         role.addToPolicy(new PolicyStatement({
           effect: Effect.ALLOW,
           resources: ["*"],
-          actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query"]
+          actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query","dynamodb:DescribeTable"]
           //           "cloudwatch:*",   "logs:*", "glue:GetConnection"
         }));
         /*role.addToPolicy(new PolicyStatement({
