@@ -1,45 +1,70 @@
 import { Construct } from 'constructs';
 import { MetaData } from './meta-data';
 import { SSMHelper } from './ssm-helper';
-import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
-import { Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
-import { Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { CfnSecurityGroup, InstanceType, ISecurityGroup, IVpc, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { CfnRole, Effect, IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { HttpMethod } from 'aws-cdk-lib/aws-events';
-import {Code, Connection, ConnectionType, GlueVersion, IJob, Job, JobExecutable, PythonVersion, WorkerType} from '@aws-cdk/aws-glue-alpha';
+import {Code, Connection, ConnectionType, GlueVersion, IConnection, IJob, Job, JobExecutable, PythonVersion, WorkerType} from '@aws-cdk/aws-glue-alpha';
+import {Ec2Environment} from '@aws-cdk/aws-cloud9-alpha';
 import { LoggingLevel } from 'aws-cdk-lib/aws-chatbot';
 import { ILogGroup, LogGroup } from 'aws-cdk-lib/aws-logs';
+import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 
 export class ComputeStack extends Stack {
     private ssmHelper = new SSMHelper();
     public glueExecutionRole:IRole;
 
-    constructor(scope: Construct, id: string, vpc: IVpc, props?: StackProps) {
+    constructor(scope: Construct, id: string, vpc: IVpc, glueVPCNetworkConnectionSecurityGroup: ISecurityGroup, props?: StackProps) {
         super(scope, id, props);
 
         this.glueExecutionRole = this.buildGlueExecutionRole();
         var codePathRoot = "../../python/trade-import/";
         var logGroup = this.createGlueLogGroup(this.glueExecutionRole);
-        //var mySQLDBConn = this.createGlueMySQLDBConn(vpc);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab1", codePathRoot+"lab1.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab2", codePathRoot+"lab2.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab3", codePathRoot+"lab3.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab4", codePathRoot+"lab4.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab5", codePathRoot+"lab5.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab6", codePathRoot+"lab6.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, "lab7", codePathRoot+"lab7.py", logGroup);
+        var glueVPCConnection = this.createGlueVPCConn(vpc, glueVPCNetworkConnectionSecurityGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab1", codePathRoot+"lab1.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab2", codePathRoot+"lab2.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab3", codePathRoot+"lab3.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab4", codePathRoot+"lab4.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab5", codePathRoot+"lab5.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab6", codePathRoot+"lab6.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab7", codePathRoot+"lab7.py", logGroup);
         /*this.createSimpleETLJob(this.glueExecutionRole, "lab8", codePathRoot+"lab8.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab9", codePathRoot+"lab9.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab10", codePathRoot+"lab10.py");*/
+        //this.createCloud9Env(vpc);
     } 
-
-    private createGlueMySQLDBConn(vpc:IVpc) {
-        var mySQLConn = new Connection(this, MetaData.PREFIX+"mysql-db-conn", {
-            type: ConnectionType.JDBC,
-            connectionName: MetaData.PREFIX+"mysql-db-conn",
-            //securityGroups: ??,
-            subnet: vpc.privateSubnets[0]
+    
+    private createCloud9Env(vpc: IVpc) {
+        // create a cloud9 ec2 environment in a new VPC
+        var postfix = "cloud9-env";
+        const cloud9Env = new Ec2Environment(this, MetaData.PREFIX+postfix, {
+            vpc,
+            subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_NAT, },
+            instanceType: new InstanceType('t3.micro'),
+            ec2EnvironmentName: MetaData.PREFIX+postfix,
+            description: MetaData.PREFIX+postfix            
         });
+        
+        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+"cloud9-env");
+        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-sg", { includeResourceTypes: [CfnSecurityGroup.CFN_RESOURCE_TYPE_NAME]});
+        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-env", { includeResourceTypes: [CfnEnvironmentEC2.CFN_RESOURCE_TYPE_NAME]});
+        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-role", { includeResourceTypes: [CfnRole.CFN_RESOURCE_TYPE_NAME]});
+        
+        // print the Cloud9 IDE URL in the output
+        new CfnOutput(this, 'URL', { value: cloud9Env.ideUrl });
     }
+
+    private createGlueVPCConn(vpc:IVpc,glueVPCNetworkConnectionSecurityGroup:ISecurityGroup):IConnection {
+        var vpcConn = new Connection(this, MetaData.PREFIX+"vpc-conn", {
+            type: ConnectionType.NETWORK,
+            connectionName: MetaData.PREFIX+"vpc-conn",
+            description: MetaData.PREFIX+"vpc-conn",
+            subnet: vpc.privateSubnets[0],
+            securityGroups: [glueVPCNetworkConnectionSecurityGroup]
+        });
+        return vpcConn;
+    }    
     
     private createGlueLogGroup(glueExecutionRole: IRole): ILogGroup {
         var logGroup = new LogGroup(this, MetaData.PREFIX+"glue-logs", {
@@ -51,7 +76,7 @@ export class ComputeStack extends Stack {
         return logGroup;
     }
 
-    private createSimpleETLJob(glueExecutionRole:IRole, jobPostFix:string, codePath:string, logGroup:ILogGroup): IJob {
+    private createSimpleETLJob(glueExecutionRole:IRole, glueVPCConnection:IConnection, jobPostFix:string, codePath:string, logGroup:ILogGroup): IJob {
         var job = new Job(this, MetaData.PREFIX+jobPostFix, {
             jobName: MetaData.PREFIX+jobPostFix,            
             executable: JobExecutable.pythonEtl({
@@ -67,7 +92,7 @@ export class ComputeStack extends Stack {
             role: glueExecutionRole,
             continuousLogging: {enabled:true, quiet:false, logGroup: logGroup},
             enableProfilingMetrics:true,
-            //connections: []
+            connections: [glueVPCConnection]
         });        
         Tags.of(job).add(MetaData.NAME, MetaData.PREFIX+jobPostFix);
         return job;
@@ -80,8 +105,9 @@ export class ComputeStack extends Stack {
             roleName: MetaData.PREFIX+"execution-role",
             assumedBy: new ServicePrincipal("glue.amazonaws.com"),
             managedPolicies: [
-                ManagedPolicy.fromAwsManagedPolicyName("CloudWatchFullAccess")
-                //ManagedPolicy.fromAwsManagedPolicyName("AWSStepFunctionsFullAccess"),
+                ManagedPolicy.fromAwsManagedPolicyName("CloudWatchFullAccess"),
+                //ManagedPolicy.fromAwsManagedPolicyName("AWSGlueServiceRole"),
+                ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSGlueServiceRole"),
                 //ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMFullAccess"),
                 //ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaSQSQueueExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"),
                 //ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaBasicExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"),
@@ -92,8 +118,14 @@ export class ComputeStack extends Stack {
           effect: Effect.ALLOW,
           resources: ["*"],
           actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query"]
-          //           "cloudwatch:*",   "logs:*",
+          //           "cloudwatch:*",   "logs:*", "glue:GetConnection"
         }));
+        /*role.addToPolicy(new PolicyStatement({
+            effect: Effect.ALLOW,
+            resources: ["*"],
+            actions: ["glue:GetConnection","ec2:DescribeSubnets","ec2:DescribeSecurityGroups"]
+            //           "cloudwatch:*",   "logs:*", "glue:GetConnection"
+          }));*/
         /*role.addToPolicy(new PolicyStatement({
             effect: Effect.ALLOW,
             resources: ["*"],

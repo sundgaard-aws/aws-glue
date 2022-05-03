@@ -1,11 +1,11 @@
 import { Stack, StackProps, Tags } from 'aws-cdk-lib';
-import { AclCidr, AclTraffic, Action, CfnInternetGateway, CfnNatGateway, CfnNetworkAcl, CfnRouteTable, CfnSecurityGroup, CfnSubnet, GatewayVpcEndpointAwsService, INetworkAcl, ISecurityGroup, IVpc, NetworkAcl, SecurityGroup, SubnetType, TrafficDirection, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { AclCidr, AclTraffic, Action, CfnInternetGateway, CfnNatGateway, CfnNetworkAcl, CfnRouteTable, CfnSecurityGroup, CfnSubnet, GatewayVpcEndpointAwsService, INetworkAcl, ISecurityGroup, IVpc, NetworkAcl, Port, Protocol, SecurityGroup, SubnetType, TrafficDirection, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { MetaData } from './meta-data';
 
 export class NetworkStack extends Stack {
     public Vpc:IVpc;
-    //public ApiSecurityGroup: ISecurityGroup;
+    public GlueVPCNetworkConnectionSecurityGroup: ISecurityGroup;
     public MySQLSecurityGroup: ISecurityGroup;
 
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -13,8 +13,9 @@ export class NetworkStack extends Stack {
         this.Vpc = this.createVPC();
         this.createEndpoints(this.Vpc);
         //this.createRDSSecurityGroup();
-       // this.ApiSecurityGroup = this.createAPISecurityGroup(this.Vpc);
+        this.GlueVPCNetworkConnectionSecurityGroup = this.createGlueVPCNetworkConnectionSecurityGroup(this.Vpc);
         this.MySQLSecurityGroup = this.createMySQLSecurityGroup(this.Vpc);
+        this.MySQLSecurityGroup.connections.allowFrom(this.GlueVPCNetworkConnectionSecurityGroup, Port.tcp(3306), "AWS Glue");
     }
     
     private createEndpoints(vpc: IVpc) {
@@ -118,8 +119,8 @@ export class NetworkStack extends Stack {
     }
     
     
-    private createAPISecurityGroup(vpc: IVpc): ISecurityGroup {
-        var postFix = "api-sg";
+    private createGlueVPCNetworkConnectionSecurityGroup(vpc: IVpc): ISecurityGroup {
+        var postFix = "vpc-network-conn-sg";
         var securityGroup = new SecurityGroup(this, MetaData.PREFIX+postFix, {
             vpc: vpc,
             securityGroupName: MetaData.PREFIX+postFix,
@@ -129,7 +130,7 @@ export class NetworkStack extends Stack {
         
         //securityGroup.connections.allowTo(this.metaData.RDSSecurityGroup, Port.tcp(3306), "Lambda to RDS");
         Tags.of(securityGroup).add(MetaData.NAME, MetaData.PREFIX+postFix);
-        //this.metaData.APISecurityGroup = securityGroup;
+        securityGroup.connections.allowFrom(securityGroup, Port.allTraffic(), "AWS Glue needs allow self on all inbound");
         return securityGroup;
     } 
 
