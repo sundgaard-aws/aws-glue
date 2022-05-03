@@ -32,6 +32,19 @@ def getParameter(name):
     ssmClient = boto3.client("ssm")
     response = ssmClient.get_parameter(Name=name, WithDecryption=True)    
     return response
+
+def writeToRDSMySQL(transformedFrame):
+    glueDriverBucketName = getParameter("acc-day-glue-driver-bucket-name")["Parameter"]["Value"]
+    jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
+    connection_mysql8_options = {
+    "url": jdbcURL,
+    "dbtable": "trade",
+    "user": secret['username'],
+    "password": secret['password'],
+    "customJdbcDriverS3Path": "s3://"+glueDriverBucketName+"/mysql-connector-java-8.0.25.jar",
+    "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
+    logger.info("writing data to database...")
+    sinkFrame = glueContext.write_dynamic_frame.from_options(frame = transformedFrame, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "sinkFrame")
 # end - functions
 
 # start job
@@ -94,33 +107,20 @@ logger.info("done trimming data frame.")
 
 # apply mapping rules
 logger.info("applying mapping rules...")
-Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
+transformedFrame = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
     ("trade_type", "string", "trade_type", "string")
     ,("amount", "string", "trade_amount", "decimal")
     ,("ccy", "string", "trade_ccy", "string")
     ,("trader_id", "string", "trader_id", "int")
     ,("trade_date", "timestamp", "trade_date", "timestamp")
-], transformation_ctx = "Transform0")
+], transformation_ctx = "transformedFrame")
 logger.info("done applying mapping rules.")
 # end - apply mapping rules
 
 
 # write to db
 logger.info("loading data to target data store...")
-glueDriverBucketName = getParameter("acc-day-glue-driver-bucket-name")["Parameter"]["Value"]
-jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
-connection_mysql8_options = {
-    "url": jdbcURL,
-    "dbtable": "trade",
-    "user": secret['username'],
-    "password": secret['password'],
-    "customJdbcDriverS3Path": "s3://"+glueDriverBucketName+"/mysql-connector-java-8.0.25.jar",
-    "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
-
-# Read from JDBC databases with custom driver
-#mysqlDynamicFrame = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
-logger.info("writing data to database...")
-DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "DataSink0")
+writeToRDSMySQL(transformedFrame)
 logger.info("done loading data to target data store.")
 # end - write to db
 

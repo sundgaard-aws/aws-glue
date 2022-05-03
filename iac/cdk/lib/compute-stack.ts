@@ -29,32 +29,17 @@ export class ComputeStack extends Stack {
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab5", codePathRoot+"lab5.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab6", codePathRoot+"lab6.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab7", codePathRoot+"lab7.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab8", codePathRoot+"lab8.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab9", codePathRoot+"lab9.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab10", codePathRoot+"lab10.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab11", codePathRoot+"lab11.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab12", codePathRoot+"lab12.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab13", codePathRoot+"lab13.py", logGroup);
         /*this.createSimpleETLJob(this.glueExecutionRole, "lab8", codePathRoot+"lab8.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab9", codePathRoot+"lab9.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab10", codePathRoot+"lab10.py");*/
-        //this.createCloud9Env(vpc);
     } 
     
-    private createCloud9Env(vpc: IVpc) {
-        // create a cloud9 ec2 environment in a new VPC
-        var postfix = "cloud9-env";
-        const cloud9Env = new Ec2Environment(this, MetaData.PREFIX+postfix, {
-            vpc,
-            subnetSelection: { subnetType: SubnetType.PRIVATE_WITH_NAT, },
-            instanceType: new InstanceType('t3.micro'),
-            ec2EnvironmentName: MetaData.PREFIX+postfix,
-            description: MetaData.PREFIX+postfix            
-        });
-        
-        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+"cloud9-env");
-        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-sg", { includeResourceTypes: [CfnSecurityGroup.CFN_RESOURCE_TYPE_NAME]});
-        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-env", { includeResourceTypes: [CfnEnvironmentEC2.CFN_RESOURCE_TYPE_NAME]});
-        //Tags.of(cloud9Env).add(MetaData.NAME, MetaData.PREFIX+postfix+"-role", { includeResourceTypes: [CfnRole.CFN_RESOURCE_TYPE_NAME]});
-        
-        // print the Cloud9 IDE URL in the output
-        new CfnOutput(this, 'URL', { value: cloud9Env.ideUrl });
-    }
-
     private createGlueVPCConn(vpc:IVpc,glueVPCNetworkConnectionSecurityGroup:ISecurityGroup):IConnection {
         var vpcConn = new Connection(this, MetaData.PREFIX+"vpc-conn", {
             type: ConnectionType.NETWORK,

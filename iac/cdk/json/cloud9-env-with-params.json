@@ -1,0 +1,23 @@
+{
+  "Parameters" : {
+    "SubnetIDParameter" : {
+      "Type" : "String",
+      "Default" : "subnet-",
+      "Description" : "ID of a private subnet within the VPC."
+    }
+  }, 
+  "Resources": {
+    "Cloud9Env": {
+    "Type" : "AWS::Cloud9::EnvironmentEC2",
+    "Properties" : {
+        "AutomaticStopTimeMinutes" : "30",
+        "ConnectionType" : "CONNECT_SSM",
+        "Name" : "cloud9-via-json-env",
+        "Description" : "cloud9-via-json-env",
+        "ImageId" : "amazonlinux-2-x86_64",
+        "InstanceType" : "t3.micro",      
+        "SubnetId" : { "Ref" : "SubnetIDParameter" }
+      }
+    }
+  }
+}

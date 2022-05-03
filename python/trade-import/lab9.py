@@ -20,13 +20,33 @@ logger = logging.getLogger("default-logger")
 logger.setLevel(logging.INFO)
 
 # functions
-def get_secret(name, version=None):
+def getSecret(name, version=None):
     secrets_client = boto3.client("secretsmanager")
     kwargs = {'SecretId': name}
     if version is not None:
         kwargs['VersionStage'] = version
     response = secrets_client.get_secret_value(**kwargs)
     return response
+
+def getParameter(name):
+    ssmClient = boto3.client("ssm")
+    response = ssmClient.get_parameter(Name=name, WithDecryption=True)    
+    return response
+
+def writeToRDSMySQL(transformedFrame):
+    logger.info("loading data to target data store...")
+    glueDriverBucketName = getParameter("acc-day-glue-driver-bucket-name")["Parameter"]["Value"]
+    jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
+    connection_mysql8_options = {
+    "url": jdbcURL,
+    "dbtable": "trade",
+    "user": secret['username'],
+    "password": secret['password'],
+    "customJdbcDriverS3Path": "s3://"+glueDriverBucketName+"/mysql-connector-java-8.0.25.jar",
+    "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
+    logger.info("writing data to database...")
+    sinkFrame = glueContext.write_dynamic_frame.from_options(frame = transformedFrame, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "sinkFrame")
+    logger.info("done loading data to target data store.")    
 # end - functions
 
 # start job
@@ -47,9 +67,9 @@ job.init(args['JOB_NAME'], args)
 # main job part
 
 # get secret
-dbSourceSecretName = "dev/trade-import/trade-mart-secret"
-logger.info("getting secret for source db...")
-secretsManagerEntry = get_secret(dbSourceSecretName)
+rdsSecretName = getParameter("acc-day-glue-trade-mart-secret-name")["Parameter"]["Value"]
+logger.info("getting secret for source db with name ["+rdsSecretName+"]...")
+secretsManagerEntry = getSecret(rdsSecretName)
 logger.info("here comes the SecretString...")
 logger.info(secretsManagerEntry['SecretString'])
 logger.info("db/username")
@@ -63,7 +83,7 @@ logger.info(secret['username'])
 
 # read from s3
 logger.info("reading data from s3 to a dynamic frame...")
-inputObject="s3://trade-input-data/fx-trades-huge.csv"
+inputObject="s3://acc-day-glue-trade-input-bucket/fx-trades-huge.csv"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(format_options = {"quoteChar":"\"","escaper":"","withHeader":True,"separator":","}, connection_type = "s3", format = "csv", connection_options = {"paths": [inputObject], "recurse":True}, transformation_ctx = "DataSource0")
 #logger.info("logging dynamic frame as json...")
@@ -89,7 +109,7 @@ logger.info("done trimming data frame.")
 
 # apply mapping rules
 logger.info("applying mapping rules...")
-Transform0 = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
+transformedFrame = ApplyMapping.apply(frame = trimmedDynamicFrame, mappings = [
     ("trade_type", "string", "trade_type", "string")
     ,("amount", "string", "trade_amount", "decimal")
     ,("ccy", "string", "trade_ccy", "string")
@@ -100,23 +120,7 @@ logger.info("done applying mapping rules.")
 # end - apply mapping rules
 
 
-# write to db
-logger.info("loading data to target data store...")
-jdbcURL = "jdbc:" + secret['engine'] + "://" + secret['host'] + ":" + str(secret['port']) + "/" + secret['dbname']
-connection_mysql8_options = {
-    "url": jdbcURL,
-    "dbtable": "trade",
-    "user": secret['username'],
-    "password": secret['password'],
-    "customJdbcDriverS3Path": "s3://glue-demo-s3-to-mysql/mysql-connector-java-8.0.25.jar",
-    "customJdbcDriverClassName": "com.mysql.cj.jdbc.Driver"}
-
-# Read from JDBC databases with custom driver
-#mysqlDynamicFrame = glueContext.create_dynamic_frame.from_options(connection_type="mysql", connection_options=connection_mysql8_options)
-logger.info("writing data to database...")
-DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform0, connection_type="mysql", connection_options=connection_mysql8_options, transformation_ctx = "DataSink0")
-logger.info("done loading data to target data store.")
-# end - write to db
+writeToRDSMySQL(transformedFrame)
 
 
 # end - main job part
