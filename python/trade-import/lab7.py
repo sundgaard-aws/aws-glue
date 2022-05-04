@@ -65,7 +65,8 @@ logger.info(secret['username'])
 
 # read from s3
 logger.info("reading JSON data from s3 to a dynamic frame...")
-inputObject="s3://acc-day-glue-trade-input-bucket/fx-trades.json"
+tradeInputBucket = getParameter("acc-day-glue-trade-input-bucket-name")["Parameter"]["Value"]
+inputObject="s3://"+tradeInputBucket+"/fx-trades.json"
 logger.info("reading data from S3 bucket ["+inputObject+"]...")
 dynamicFrame = glueContext.create_dynamic_frame.from_options(
     format_options={"multiline": False},

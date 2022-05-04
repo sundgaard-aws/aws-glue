@@ -8,6 +8,7 @@ import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3'
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { ParameterType } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
+import { randomUUID } from 'crypto';
 import { MetaData } from './meta-data';
 import { SSMHelper } from './ssm-helper';
 
@@ -25,7 +26,7 @@ export class DataStack extends Stack {
     }
     
     private createGlueDriverBucket(glueExecutionRole: IRole) {
-        var name = MetaData.PREFIX+"driver-bucket";
+        var name = MetaData.PREFIX+"driver-bucket-"+randomUUID();
         var bucket = new Bucket(this, name, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
@@ -38,7 +39,7 @@ export class DataStack extends Stack {
     }
 
     private createInputBucket(glueExecutionRole: IRole) {
-        var name = MetaData.PREFIX+"trade-input-bucket";
+        var name = MetaData.PREFIX+"trade-input-bucket-"+randomUUID();
         var bucket = new Bucket(this, name, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,

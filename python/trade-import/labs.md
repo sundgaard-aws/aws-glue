@@ -1,14 +1,10 @@
 # Prerequisites
-Deploy cloud9.json template. (VPC not created yet....)
-Login to Cloud9.
-Disable "Managed Credentials".
-Deploy first part of CDK stack.
 Create target table "trade" in MySQL (for performance reasons).
 
-# Step1
+# lab 1
 Empty job just with context and logging
 
-# Step2
+# lab 2
 Get secret from AWS secrets manager
 
 # Step3
