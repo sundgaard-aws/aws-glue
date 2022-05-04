@@ -17,11 +17,11 @@ import { Md5 } from 'ts-md5';
 export class DataStack extends Stack {
     private glueExecutionRole:IRole;
 
-    constructor(scope: Construct, id: string, vpc: IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole, props?: StackProps) {
+    constructor(scope: Construct, id: string, vpc: IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole, region:string, props?: StackProps) {
         super(scope, id, props);
         this.glueExecutionRole = glueExecutionRole;
         const _this = this;
-        this.getUserHash().then(function(userHash){
+        this.getUserHash(region).then(function(userHash){
             _this.createInputBucket(glueExecutionRole, userHash);
             _this.createGlueDriverBucket(glueExecutionRole, userHash);
         });
@@ -58,8 +58,8 @@ export class DataStack extends Stack {
         stringParam.grantRead(glueExecutionRole);
     }
     
-    private async getUserHash(): Promise<string> {
-        const client = new STSClient({});
+    private async getUserHash(region:string): Promise<string> {
+        const client = new STSClient({region:region});
         const command = new GetCallerIdentityCommand({});
         var response = await client.send(command);
         if(response.UserId) { 
