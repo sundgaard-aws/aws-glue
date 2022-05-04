@@ -8,6 +8,7 @@ import { ComputeStack } from './compute-stack';
 import { DeveloperStack } from './developer-stack';
 import { DataStack } from './data-stack';
 import { App } from 'aws-cdk-lib';
+import { SecurityStack } from './security-stack';
 
 const app = new App();
 var region = process.env["CDK_DEFAULT_REGION"];
@@ -16,6 +17,7 @@ var props = {env: {account: process.env["CDK_DEFAULT_ACCOUNT"], region: region }
 var metaData = new MetaData();
 
 var networkStack = new NetworkStack(app, MetaData.PREFIX+"network-stack", props);
-var computeStack = new ComputeStack(app, MetaData.PREFIX+"compute-stack", networkStack.Vpc, networkStack.GlueVPCNetworkConnectionSecurityGroup, props);
-new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc,  networkStack.MySQLSecurityGroup, computeStack.glueExecutionRole, props);
+var securityStack = new SecurityStack(app, MetaData.PREFIX+"security-stack", networkStack.Vpc, props);
+var computeStack = new ComputeStack(app, MetaData.PREFIX+"compute-stack", networkStack.Vpc, securityStack.GlueVPCNetworkConnectionSecurityGroup, props);
+new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc,  securityStack.MySQLSecurityGroup, computeStack.glueExecutionRole, props);
 //new DeveloperStack(app, MetaData.PREFIX+"developer-stack", networkStack.Vpc, props);

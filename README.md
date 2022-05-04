@@ -1,14 +1,23 @@
 # aws-glue
 
-# prerequisite
-Login to event engine
-Login to AWS
-Start cloud console
+# pre-requisites
+- Login to "Event Engine" using OTP (one time password) received via email
+- Login to "AWS Console" through link in "Event Engine"
+- Start "Cloud Console" from the top bar
+
+``` sh
+# run the following snippet in "Cloud Console"
+mkdir git
 git clone https://github.com/sundgaard-aws/aws-glue.git
 cd aws-glue/iac/cdk
 yum install typescript
 sudo npm install -g aws-cdk@latest
+cdk deploy *network*
+```
 
+- Deploy Cloud9 via CloudFormation template "cloud9-env-with-params.json"
+
+# other steps
 Create security group for job
 Open inbound ports for all TCP on that SG
 Create NAT GW or VPCE as IGW won't work (https://aws.amazon.com/premiumsupport/knowledge-center/glue-test-connection-failed/)

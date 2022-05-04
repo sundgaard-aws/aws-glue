@@ -29,7 +29,7 @@ Read JSON data from S3
 # lab 8 - import large data set
 Import large data set 1M+ rows
 
-# lab 9 - import huge data set
+# lab 9 - import huge data set (15 mins)
 Import large data set 20M+ rows
 
 # lab 10 - writing to a NoSQL DB

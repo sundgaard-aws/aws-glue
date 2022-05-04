@@ -13,7 +13,7 @@
         "AutomaticStopTimeMinutes" : "30",
         "ConnectionType" : "CONNECT_SSM",
         "Name" : "cloud9-via-json-env",
-        "Description" : "cloud9-via-json-env",
+        "Description" : "cloud9-env",
         "ImageId" : "amazonlinux-2-x86_64",
         "InstanceType" : "t3.micro",      
         "SubnetId" : { "Ref" : "SubnetIDParameter" }

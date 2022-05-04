@@ -1,37 +1,16 @@
-import { Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { CfnOutput, Stack, StackProps, Tags } from 'aws-cdk-lib';
 import { AclCidr, AclTraffic, Action, CfnInternetGateway, CfnNatGateway, CfnNetworkAcl, CfnRouteTable, CfnSecurityGroup, CfnSubnet, GatewayVpcEndpointAwsService, INetworkAcl, ISecurityGroup, IVpc, NetworkAcl, Port, Protocol, SecurityGroup, SubnetType, TrafficDirection, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { MetaData } from './meta-data';
 
 export class NetworkStack extends Stack {
     public Vpc:IVpc;
-    public GlueVPCNetworkConnectionSecurityGroup: ISecurityGroup;
-    public MySQLSecurityGroup: ISecurityGroup;
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
         this.Vpc = this.createVPC();
-        this.createEndpoints(this.Vpc);
-        //this.createRDSSecurityGroup();
-        this.GlueVPCNetworkConnectionSecurityGroup = this.createGlueVPCNetworkConnectionSecurityGroup(this.Vpc);
-        this.MySQLSecurityGroup = this.createMySQLSecurityGroup(this.Vpc);
-        this.MySQLSecurityGroup.connections.allowFrom(this.GlueVPCNetworkConnectionSecurityGroup, Port.tcp(3306), "AWS Glue");
-    }
-    
-    private createEndpoints(vpc: IVpc) {
-        /*vpc.addGatewayEndpoint(MetaData.PREFIX+"dyndb-ep", {
-            service: GatewayVpcEndpointAwsService.DYNAMODB,
-            subnets: [
-                 { subnetType: SubnetType.PRIVATE_ISOLATED }, { subnetType: SubnetType.PUBLIC }
-            ]
-        });
-        vpc.addGatewayEndpoint(MetaData.PREFIX+"s3-ep", {
-            service: GatewayVpcEndpointAwsService.S3,
-            subnets: [
-                 { subnetType: SubnetType.PRIVATE_ISOLATED }, { subnetType: SubnetType.PUBLIC }
-            ]
-        });*/
-    }
+        this.createVPCEndpoints(this.Vpc);
+    }   
     
     private createVPC():IVpc {
         // Link: https://blog.codecentric.de/en/2019/09/aws-cdk-create-custom-vpc/
@@ -47,9 +26,9 @@ export class NetworkStack extends Stack {
         var publicNacl = this.createPublicNacl(vpc);
         vpc.publicSubnets.forEach( subnet => { subnet.associateNetworkAcl(MetaData.PREFIX+"public-nacl-assoc", publicNacl) } );
         var privateNacl = this.createPrivateNacl(vpc);
-        vpc.privateSubnets.forEach( subnet => { subnet.associateNetworkAcl(MetaData.PREFIX+"private-nacl-assoc", privateNacl) } );
-        
+        vpc.privateSubnets.forEach( subnet => { subnet.associateNetworkAcl(MetaData.PREFIX+"private-nacl-assoc", privateNacl) } );        
         this.tagVPCResources(vpc);
+        new CfnOutput(this, 'Private Subnet ID', { value: vpc.privateSubnets[0].subnetId });
         
         return vpc;
     }
@@ -117,36 +96,20 @@ export class NetworkStack extends Stack {
         Tags.of(privateNacl).add(MetaData.NAME, MetaData.PREFIX+"private-nacl");
         return privateNacl;
     }
-    
-    
-    private createGlueVPCNetworkConnectionSecurityGroup(vpc: IVpc): ISecurityGroup {
-        var postFix = "vpc-network-conn-sg";
-        var securityGroup = new SecurityGroup(this, MetaData.PREFIX+postFix, {
-            vpc: vpc,
-            securityGroupName: MetaData.PREFIX+postFix,
-            description: MetaData.PREFIX+postFix,
-            allowAllOutbound: true
-        });
-        
-        //securityGroup.connections.allowTo(this.metaData.RDSSecurityGroup, Port.tcp(3306), "Lambda to RDS");
-        Tags.of(securityGroup).add(MetaData.NAME, MetaData.PREFIX+postFix);
-        securityGroup.connections.allowFrom(securityGroup, Port.allTraffic(), "AWS Glue needs allow self on all inbound");
-        return securityGroup;
-    } 
 
-    private createMySQLSecurityGroup(vpc: IVpc): ISecurityGroup {
-        var postFix = "rds-mysql-sg";
-        var securityGroup = new SecurityGroup(this, MetaData.PREFIX+postFix, {
-            vpc: vpc,
-            securityGroupName: MetaData.PREFIX+postFix,
-            description: MetaData.PREFIX+postFix,
-            allowAllOutbound: true
+    private createVPCEndpoints(vpc: IVpc) {
+        /*vpc.addGatewayEndpoint(MetaData.PREFIX+"dyndb-ep", {
+            service: GatewayVpcEndpointAwsService.DYNAMODB,
+            subnets: [
+                 { subnetType: SubnetType.PRIVATE_ISOLATED }, { subnetType: SubnetType.PUBLIC }
+            ]
         });
-        
-        //securityGroup.connections.allowTo(this.metaData.RDSSecurityGroup, Port.tcp(3306), "Lambda to RDS");
-        Tags.of(securityGroup).add(MetaData.NAME, MetaData.PREFIX+postFix);
-        //this.metaData.APISecurityGroup = securityGroup;
-        return securityGroup;
+        vpc.addGatewayEndpoint(MetaData.PREFIX+"s3-ep", {
+            service: GatewayVpcEndpointAwsService.S3,
+            subnets: [
+                 { subnetType: SubnetType.PRIVATE_ISOLATED }, { subnetType: SubnetType.PUBLIC }
+            ]
+        });*/
     }
     
     private tagVPCResources(vpc: Vpc) {
