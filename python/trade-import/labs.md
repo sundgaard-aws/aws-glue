@@ -1,4 +1,9 @@
 # Prerequisites
+cdk deploy --all
+ (200 sec) -network
+ (30 sec) -security
+ (616 sec) -data
+ (57 sec) - compute
 Create target table "trade" in MySQL (for performance reasons).
 
 # lab 1

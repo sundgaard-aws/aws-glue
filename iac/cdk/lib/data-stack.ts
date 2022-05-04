@@ -11,6 +11,8 @@ import { Construct } from 'constructs';
 import { randomUUID } from 'crypto';
 import { MetaData } from './meta-data';
 import { SSMHelper } from './ssm-helper';
+import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
+import { Md5 } from 'ts-md5';
 
 export class DataStack extends Stack {
     private glueExecutionRole:IRole;
@@ -18,16 +20,19 @@ export class DataStack extends Stack {
     constructor(scope: Construct, id: string, vpc: IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole, props?: StackProps) {
         super(scope, id, props);
         this.glueExecutionRole = glueExecutionRole;
-        this.createInputBucket(glueExecutionRole);
-        this.createGlueDriverBucket(glueExecutionRole);
+        const _this = this;
+        this.getUserHash().then(function(userHash){
+            _this.createInputBucket(glueExecutionRole, userHash);
+            _this.createGlueDriverBucket(glueExecutionRole, userHash);
+        });
         this.createDynamoDBTradeTable(glueExecutionRole);
         this.createRDSMySQLDB(vpc, rdsMySQLSecurityGroup, this.glueExecutionRole);
         //this.createRDSSecret();
     }
     
-    private createGlueDriverBucket(glueExecutionRole: IRole) {
+    private createGlueDriverBucket(glueExecutionRole: IRole, userHash:string) {
         var id = MetaData.PREFIX+"driver-bucket";
-        var name = MetaData.PREFIX+"drivers-"+randomUUID(); // max 63 chars
+        var name = MetaData.PREFIX+"drivers-"+userHash; // max 63 chars
         var bucket = new Bucket(this, id, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
@@ -39,9 +44,9 @@ export class DataStack extends Stack {
         stringParam.grantRead(glueExecutionRole);
     }
 
-    private createInputBucket(glueExecutionRole: IRole) {
+    private createInputBucket(glueExecutionRole: IRole, userHash:string) {        
         var id = MetaData.PREFIX+"trade-input-bucket";
-        var name = MetaData.PREFIX+"input-"+randomUUID(); // max 63 chars
+        var name = MetaData.PREFIX+"input-"+userHash; // max 63 chars
         var bucket = new Bucket(this, id, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
@@ -51,7 +56,20 @@ export class DataStack extends Stack {
         bucket.grantRead(glueExecutionRole);
         var stringParam = new SSMHelper().createSSMParameter(this, MetaData.PREFIX+"trade-input-bucket-name", bucket.bucketName, ParameterType.STRING);
         stringParam.grantRead(glueExecutionRole);
-    }     
+    }
+    
+    private async getUserHash(): Promise<string> {
+        const client = new STSClient({});
+        const command = new GetCallerIdentityCommand({});
+        var response = await client.send(command);
+        if(response.UserId) { 
+            console.log("userId=["+response.UserId+"]");
+            var hash = Md5.hashStr(response.UserId);
+            console.log("hashed userId=["+hash+"]");
+            return hash;
+        }
+        else return "";
+    }    
     
     private createRDSMySQLDB(vpc:IVpc, rdsMySQLSecurityGroup: ISecurityGroup, glueExecutionRole: IRole) {
         var name = MetaData.PREFIX+"trade-mart-rds";
