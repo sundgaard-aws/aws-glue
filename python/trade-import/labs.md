@@ -4,27 +4,55 @@ cdk deploy --all
  (30 sec) -security
  (616 sec) -data
  (57 sec) - compute
-Create target table "trade" in MySQL (for performance reasons).
+
+
+# lab 0
+``` sh
+# ensure you are using Event Engine credentials
+aws sts get-caller-identity
+aws s3 ls | grep input
+echo please type "trade-input-bucket-name"
+read tradeInputBucket
+cd ~/environment/git/aws-glue/python/trade-import
+python generate-large-data-file.py
+python generate-huge-data-file.py
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.json s3://$tradeInputBucket/
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.csv s3://$tradeInputBucket/
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-large.csv s3://$tradeInputBucket/
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-huge.csv s3://$tradeInputBucket/
+aws s3 ls | grep driver
+echo please type "driver-bucket-name"
+read driverBucket
+cd /tmp/
+wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar
+aws s3 cp mysql-connector-java-8.0.25.jar s3://$driverBucket/
+```
+- Create target table "trade" in MySQL (for performance reasons).
 
 # lab 1
-Empty job just with context and logging
+Run an "Empty" job just with context and logging. You can run it either via the console or the CLI. Try both.
+``` sh
+aws glue list-jobs
+aws glue start-job-run --job-name acc-day-glue-lab1
+aws glue get-job-runs --job-name acc-day-glue-lab1 --output table
+```
 
 # lab 2
 Get secret from AWS secrets manager
 
-# Step3
+# lab 3
 Read CSV data from S3
 
-# Step4
+# lab 4
 Trim data in source data frame
 
-# Step5
+# lab 5
 Apply mappings
 
-# Step6
+# lab 6
 Write to target DB
 
-# lab7
+# lab 7
 Read JSON data from S3
 
 # lab 8 - import large data set
