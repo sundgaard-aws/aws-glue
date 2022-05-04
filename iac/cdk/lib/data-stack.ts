@@ -26,26 +26,28 @@ export class DataStack extends Stack {
     }
     
     private createGlueDriverBucket(glueExecutionRole: IRole) {
-        var name = MetaData.PREFIX+"driver-bucket-"+randomUUID();
-        var bucket = new Bucket(this, name, {
+        var id = MetaData.PREFIX+"driver-bucket";
+        var name = MetaData.PREFIX+"drivers-"+randomUUID(); // max 63 chars
+        var bucket = new Bucket(this, id, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
             encryption: BucketEncryption.S3_MANAGED
         });
-        Tags.of(bucket).add(MetaData.NAME, name);
+        Tags.of(bucket).add(MetaData.NAME, id);
         bucket.grantRead(glueExecutionRole);
         var stringParam = new SSMHelper().createSSMParameter(this, MetaData.PREFIX+"driver-bucket-name", bucket.bucketName, ParameterType.STRING);
         stringParam.grantRead(glueExecutionRole);
     }
 
     private createInputBucket(glueExecutionRole: IRole) {
-        var name = MetaData.PREFIX+"trade-input-bucket-"+randomUUID();
-        var bucket = new Bucket(this, name, {
+        var id = MetaData.PREFIX+"trade-input-bucket";
+        var name = MetaData.PREFIX+"input-"+randomUUID(); // max 63 chars
+        var bucket = new Bucket(this, id, {
             bucketName:name,
             blockPublicAccess:BlockPublicAccess.BLOCK_ALL,
             encryption: BucketEncryption.S3_MANAGED
         });
-        Tags.of(bucket).add(MetaData.NAME, name);
+        Tags.of(bucket).add(MetaData.NAME, id);
         bucket.grantRead(glueExecutionRole);
         var stringParam = new SSMHelper().createSSMParameter(this, MetaData.PREFIX+"trade-input-bucket-name", bucket.bucketName, ParameterType.STRING);
         stringParam.grantRead(glueExecutionRole);
