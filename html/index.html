@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+
+<div class="container-fluid">           
+<div class="row" style="height: 6rem; width:100%; background-color: #232F3E;">
+    <div class="col-md-auto" style="line-height: 6rem;"><img src="images/aws_tiny_dark.png"></div>
+    <div class="col-md-auto">
+    <div style="color: #ffffff; font-size: 1.8rem; line-height: 6rem;" id="prerequisites">AWS Glue - Introduction</div>
+    </div>
+</div>
+
+<h1>Prerequisites</h1>
+<div class="code">
+cdk deploy --all
+</div>
+<ul>
+<li>(200 sec) - network</li>
+<li>(30 sec) - security</li>
+<li>(616 sec) - data</li>
+<li>(57 sec) - compute</li>
+</ul>
+
+<h1 id="lab-0">Lab 0</h1>
+If not already done, start by logging in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>.
+<div class="code">
+# ensure you are using Event Engine credentials<br/>
+aws sts get-caller-identity<br/>
+aws s3 ls | grep input<br/>
+echo please type &quot;trade-input-bucket-name&quot;<br/>
+read tradeInputBucket<br/>
+cd ~/environment/git/aws-glue/python/trade-import<br/>
+python generate-large-data-file.py<br/>
+python generate-huge-data-file.py<br/>
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.json s3://$tradeInputBucket/<br/>
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.csv s3://$tradeInputBucket/<br/>
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-large.csv s3://$tradeInputBucket/<br/>
+aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-huge.csv s3://$tradeInputBucket/<br/>
+aws s3 ls | grep driver<br/>
+echo please type &quot;driver-bucket-name&quot;<br/>
+read driverBucket<br/>
+cd /tmp/<br/>
+wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar<br/>
+aws s3 cp mysql-connector-java-8.0.25.jar s3://$driverBucket/<br/>
+</div>
+<ul>
+<li>Create target table &quot;trade&quot; in MySQL (for performance reasons).</li>
+</ul>
+
+<h1 id="lab-1">Lab 1</h1>
+Run an &quot;Empty&quot; job just with context and logging.<br/>
+You can run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using Cloud9. Try both.<br/>
+
+<div class="code">
+aws glue list-jobs<br/>
+aws glue start-job-run --job-name acc-day-glue-lab1<br/>
+aws glue get-job-runs --job-name acc-day-glue-lab1 --output table<br/>
+</div>
+
+Note the output logs in CloudWatch as well as the timings for the run.
+
+<h1>Lab 2 - Get secret from AWS secrets manager</h1>
+In this second lab we will be reading a database secret from AWS Secrets Manager. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/" target="_blank">AWS Secrets Manager</a> to view the secret as well as the secret values.
+
+<h1>Lab 3 - Read CSV data from S3</h1>
+
+<h1>Lab 4 - Trim data in source data frame</h1>
+
+<h1>Lab 5 - Apply mappings</h1>
+
+<h1>Lab 6 - Write to target MySQL DB</h1>
+
+<h1>Lab 7 - Read JSON data from S3</h1>
+
+<h1>Lab 8 - Import large data set</h1>
+Import large data set 1M+ rows
+
+<h1>Lab 9 - import huge data set (SKIP or let timeout)</h1>
+Import large data set 20M+ rows.<br/>
+Will most likely timeout as is.<br/>
+Try to modify table.<br/>
+Add Cloud9 to RDS security group inbound rule.<br/>
+mysql -h .rds.amazonaws.com -u xx -pXX tradedb<br/>
+
+<h1>Lab 10 - Writing to a NoSQL DB</h1>
+Write data to DynamoDB instead of MySQL
+
+<h1>Lab 11 - Write large data sets to no-sql-db</h1>
+
+<h1>Lab 12 - Using multiple partitions</h1>
+
+<h1>Lab 13 - Write large data sets to no-sql-db using partioning</h1>
+Run job.
+Up number of glue workers to match num partitions (6).
+Run job again.
+Note diff if any.
+
+<h1>Lab 14 - Glue crawler for DynamoDB</h1>
+Create glue crawler for DynamoDB table.
+Create glue DB.
+Run crawler on demand.
+
+<h1>lab 16 - glue crawler for MySQL</h1>
+In the RDS MySQL DB
+<ul>
+<li>Create counterparty table.</li>
+<li>Insert data into counterparty table.</li>
+<li>Create cpty table.</li>
+<li>Create crawler for RDS MySQL DB (tradedb/%)</li>
+</ul>
+
+<h1>Lab 17 - bookmarks (optional)</h1>
+<ul>
+<li>Create UI job transferring data from counterparty to cpty</li>
+<li>Insert more data into counterparty table.</li>
+<li>Note that only new rows are transferred.</li>
+</ul>
+
+<h1>Lab 25 - bookmarks (optional)</h1>
+<ul>
+<li>Enable and define bookmark</li>
+<li>Read existing data</li>
+<li>Verify that data is written to target</li>
+<li>Add more data to source</li>
+<li>Read data again</li>
+<li>Verify that only new data is read/written to target</li>
+</ul>
+
+<h1>lab 26 - reset bookmark (optional)</h1>
+<ul>
+<li>Reset bookmark</li>
+</ul>
+
+<div class="footer">
+    © 2022, Amazon Web Services, Inc. or its affiliates.
+</div>
+</body>
+</html>
