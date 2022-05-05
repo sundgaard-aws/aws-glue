@@ -17,18 +17,27 @@
 </div>
 
 <h1>Prerequisites</h1>
+<p>
+If not already done, please complete the <a href="">Getting Started</a> lesson first. Next log in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>.
+</p>
+
 <div class="code">
 cdk deploy --all
 </div>
+
+<p>You can roughly expect the following runtimes for the different stacks that are deployed as part of this process.</p>
 <ul>
-<li>(200 sec) - network</li>
-<li>(30 sec) - security</li>
-<li>(616 sec) - data</li>
-<li>(57 sec) - compute</li>
+<li>Network Stack: 200 secs</li>
+<li>Security Stack: 30 secs</li>
+<li>Data Stack: 616 secs</li>
+<li>Compute Stack: 57 secs</li>
 </ul>
 
-<h1 id="lab-0">Lab 0</h1>
-If not already done, start by logging in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>.
+<h1 id="lab-0">Lab 0 - Setup</h1>
+<p>
+If not already done, start by logging in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. Next we will first ensure that the AWS credentials used are the right ones, and next we will start to copy some sample data to their respective S3 buckets.
+</p>
+
 <div class="code">
 # ensure you are using Event Engine credentials<br/>
 aws sts get-caller-identity<br/>
@@ -49,13 +58,18 @@ cd /tmp/<br/>
 wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar<br/>
 aws s3 cp mysql-connector-java-8.0.25.jar s3://$driverBucket/<br/>
 </div>
+
+<p>Once all files has been copied to S3, verify that the files are in the buckets using either the AWS CLI or the <a href="https://eu-west-1.console.aws.amazon.com/s3/" target="_blank">Amazon S3 Console</a>.</p>
+
 <ul>
 <li>Create target table &quot;trade&quot; in MySQL (for performance reasons).</li>
 </ul>
 
-<h1 id="lab-1">Lab 1</h1>
+<h1 id="lab-1">Lab 1 - Creating a basic job</h1>
+<p>
 Run an &quot;Empty&quot; job just with context and logging.<br/>
 You can run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using Cloud9. Try both.<br/>
+</p>
 
 <div class="code">
 aws glue list-jobs<br/>
@@ -63,16 +77,27 @@ aws glue start-job-run --job-name acc-day-glue-lab1<br/>
 aws glue get-job-runs --job-name acc-day-glue-lab1 --output table<br/>
 </div>
 
-Note the output logs in CloudWatch as well as the timings for the run.
+<p>Note the output logs in CloudWatch as well as the timings for the run.</p>
 
-<h1>Lab 2 - Get secret from AWS secrets manager</h1>
+<h1>Lab 2 - Read secret from AWS Secrets Manager</h1>
+<p>
 In this second lab we will be reading a database secret from AWS Secrets Manager. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/" target="_blank">AWS Secrets Manager</a> to view the secret as well as the secret values.
+</p>
 
-<h1>Lab 3 - Read CSV data from S3</h1>
+<h1>Lab 3 - Read CSV data from Amazon S3</h1>
+<p>
+Now that we have the basics in place, we will actually start to read data from an S3 object store. AWS Glue has the concept of <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-extensions-dynamic-frame.html" target="_blank">DynamicFrames</a> which is a more dynamic version of the more well known Python DataFrames. In most cases, reading data in to a DynamicFrame will be the first actual step in any Glue ETL job.
+</p>
 
 <h1>Lab 4 - Trim data in source data frame</h1>
+<p>
+Often source data comes in all shapes and sizes and can be filled with unexpected characters, whitespaces and much more. In the previous lab, did you notice some potential issues with the input file? Actually there were whitespaces in front of most of the values, which would cause problems as part of the type conversion process. You can verify this by looking at the JSON print out in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>. In this lab we will make sure that all whitespaces are trimmed.
+</p>
 
 <h1>Lab 5 - Apply mappings</h1>
+<p>
+    After reading the data we want to map it to the target schema. This is done using the apply() method of the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-transforms-ApplyMapping.html" target="_blank">ApplyMapping</a> class. The ApplyMapping class is one of the AWS Glue classes in the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-transforms.html" target="_blank">Transforms</a> namespace. Feel free to investigate the other classes in this namespace when time allows.
+</p>
 
 <h1>Lab 6 - Write to target MySQL DB</h1>
 

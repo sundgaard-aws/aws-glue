@@ -6,8 +6,12 @@ h1 {
     font-family: 'Amazon Ember', Tahoma;font-size: 1.3rem; font-weight:bold; margin-top: 2rem;
 }
 
+p {
+    width: 50rem; text-align: justify; /*background-color: #cfcfcc;*/
+}
+
 div.code {
-    font-family: Consolas; padding:2rem; width:100%; background-color: #232F3E; color: #1feb1f; margin-top:0.5rem; margin-bottom: 0.5rem;
+    width: 50rem; font-size: 0.8rem; font-family: Consolas; padding:2rem; width:100%; background-color: #232F3E; color: #1feb1f; margin-top:0.5rem; margin-bottom: 0.5rem;
 }
 
 div.footer {
