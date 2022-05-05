@@ -18,7 +18,7 @@
 
 <h1>Prerequisites</h1>
 <p>
-If not already done, please complete the <a href="">Getting Started</a> lesson first. Next log in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>.
+If not already done, please complete the <a href="">Getting Started</a> lesson first. Next log in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. The Python code for all labs are available via the GitHub link that was cloned earlier.
 </p>
 
 <div class="code">
@@ -84,27 +84,64 @@ aws glue get-job-runs --job-name acc-day-glue-lab1 --output table<br/>
 In this second lab we will be reading a database secret from AWS Secrets Manager. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/" target="_blank">AWS Secrets Manager</a> to view the secret as well as the secret values.
 </p>
 
+#runjob
+
 <h1>Lab 3 - Read CSV data from Amazon S3</h1>
 <p>
 Now that we have the basics in place, we will actually start to read data from an S3 object store. AWS Glue has the concept of <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-extensions-dynamic-frame.html" target="_blank">DynamicFrames</a> which is a more dynamic version of the more well known Python DataFrames. In most cases, reading data in to a DynamicFrame will be the first actual step in any Glue ETL job.
 </p>
+
+#runjob
 
 <h1>Lab 4 - Trim data in source data frame</h1>
 <p>
 Often source data comes in all shapes and sizes and can be filled with unexpected characters, whitespaces and much more. In the previous lab, did you notice some potential issues with the input file? Actually there were whitespaces in front of most of the values, which would cause problems as part of the type conversion process. You can verify this by looking at the JSON print out in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>. In this lab we will make sure that all whitespaces are trimmed.
 </p>
 
+#runjob
+
 <h1>Lab 5 - Apply mappings</h1>
 <p>
     After reading the data we want to map it to the target schema. This is done using the apply() method of the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-transforms-ApplyMapping.html" target="_blank">ApplyMapping</a> class. The ApplyMapping class is one of the AWS Glue classes in the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-transforms.html" target="_blank">Transforms</a> namespace. Feel free to investigate the other classes in this namespace when time allows.
 </p>
 
-<h1>Lab 6 - Write to target MySQL DB</h1>
+#runjob
+
+<h1>Lab 6 - Write to target Amazon RDS MySQL DB</h1>
+<p>
+So far we have been reading data from Amazon S3, and we have trimmed/prepared and mapped the data to the target database schema. In this lab we will actually be writing the data to the target data store. We will be writing to Amazon RDS for MySQL, which is a managed MySQL compatible relational database offering from AWS.
+</p>
+
+#runjob
+
+<p>
+Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from Cloud9. Please ensure that you have configured the RDS security group to allow inbound connections from Cloud9 for the MySQL port, as described earlier. The job will only insert a few records in this lab, so it is safe to select all contents from the table using the code below.
+</p>
+
+#code
 
 <h1>Lab 7 - Read JSON data from S3</h1>
+<p>
+    Reading JSON data from S3 is very similar to reading CSV data. The main difference in the code is the format parameter of the fromOptions() method which changes value from csv to json. A few other csv specific options are removed, and a few are added. We will not be preparing or mapping the data to anything in this lab, but we will simply read the data and investigate the CloudWatch logs.
+</p>
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+#runjob
+
+<p>
+    Once the job has completed open #cwlink and notice the output from the DynamicFrame that has been read.
+</p>
 
 <h1>Lab 8 - Import large data set</h1>
-Import large data set 1M+ rows
+<p>
+Often when dealing with ETL jobs you will be working with thousands or even millions of rows. AWS Glue has many features to support large data sets. In the coming labs we will be focusing on some of those features and capabilities. Some are AWS Glue specific and other are related to the Python and PySpark language and framework.</p>
+<p>
+In this lab we will load 1M rows from a CSV file, and investigate the runtime metrics and logs produced by the job. This will give us an idea of the speed that you can expect from AWS Glue with the given settings. Also note the job details for the job, which specifies both the number of workers and the instance type used, being to of the most critical components when right sizing AWS Glue ETL jobs.
+</p>
+
+#runjob
 
 <h1>Lab 9 - import huge data set (SKIP or let timeout)</h1>
 Import large data set 20M+ rows.<br/>
@@ -113,12 +150,27 @@ Try to modify table.<br/>
 Add Cloud9 to RDS security group inbound rule.<br/>
 mysql -h .rds.amazonaws.com -u xx -pXX tradedb<br/>
 
-<h1>Lab 10 - Writing to a NoSQL DB</h1>
+<h1>Lab 10 - Writing to Amazon Dynamodb</h1>
+<p>
+For decades most databases have been relational databases or so called RDBMS. For the past years many new types of databases has emerged, including NoSQL and KeyValuePair databases. The ability to scale horizontally, as vertical scaling has limits and can be hard to right size, and the struggle to keep relational database schemas up to date and in sync with code and APIs are some of the main reasons why these database types are becoming more and more popular.
 Write data to DynamoDB instead of MySQL
+</p>
 
-<h1>Lab 11 - Write large data sets to no-sql-db</h1>
+#runjob
+
+<h1>Lab 11 - Write large data sets to Amazon Dynamodb</h1>
+<p>
+
+</p>
+
+#runjob
 
 <h1>Lab 12 - Using multiple partitions</h1>
+<p>
+
+</p>
+
+#runjob
 
 <h1>Lab 13 - Write large data sets to no-sql-db using partioning</h1>
 Run job.
@@ -142,24 +194,24 @@ In the RDS MySQL DB
 
 <h1>Lab 17 - bookmarks (optional)</h1>
 <ul>
-<li>Create UI job transferring data from counterparty to cpty</li>
-<li>Insert more data into counterparty table.</li>
-<li>Note that only new rows are transferred.</li>
+    <li>Create UI job transferring data from counterparty to cpty</li>
+    <li>Insert more data into counterparty table.</li>
+    <li>Note that only new rows are transferred.</li>
 </ul>
 
 <h1>Lab 25 - bookmarks (optional)</h1>
 <ul>
-<li>Enable and define bookmark</li>
-<li>Read existing data</li>
-<li>Verify that data is written to target</li>
-<li>Add more data to source</li>
-<li>Read data again</li>
-<li>Verify that only new data is read/written to target</li>
+    <li>Enable and define bookmark</li>
+    <li>Read existing data</li>
+    <li>Verify that data is written to target</li>
+    <li>Add more data to source</li>
+    <li>Read data again</li>
+    <li>Verify that only new data is read/written to target</li>
 </ul>
 
 <h1>lab 26 - reset bookmark (optional)</h1>
 <ul>
-<li>Reset bookmark</li>
+    <li>Reset bookmark</li>
 </ul>
 
 <div class="footer">
