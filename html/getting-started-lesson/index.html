@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+
+<div class="container-fluid">           
+<div class="row" style="height: 6rem; width:100%; background-color: #232F3E;">
+    <div class="col-md-auto" style="line-height: 6rem;"><img src="images/aws_tiny_dark.png"></div>
+    <div class="col-md-auto">
+    <div style="color: #ffffff; font-size: 1.8rem; line-height: 6rem;" id="prerequisites">Acceleration Day - Getting Started</div>
+    </div>
+</div>
+
+
+<h1>Accessing AWS Event Engine</h1>
+<p>In this guide we will help you get started by accessing AWS Event Engine, the AWS CloudShell as well as Cloud9. Let us start by pasting the URL of the event in a browser tab. Use an incognito browser to ensure that you are not using credentials from your own AWS account. Chrome and Firefox browsers are preferred.</p>
+<img src="images/Slide2.PNG">
+
+<p>You will be required to login using an OTP. Choose this option to continue.</p>
+<img src="images/Slide3.PNG">
+
+<p>Next you must specify your email. It has to be a valid email address that you can access, and it MUST be the email address that you specified to the event administrator, prior to the event. Click 'Send passcode'.</p>
+<img src="images/Slide4.PNG">
+
+<p>You should receive a passcode from AWS Training in your mailbox shortly. Copy that passcode.</p>
+<img src="images/Slide6.PNG">
+
+<p>Now go back to the browser tab with the OTP dialog. Paste in the passcode and click 'Sign in'.</p>
+<img src="images/Slide5.PNG">
+
+<p>Wait for the sign in process to complete.</p>
+<img src="images/Slide7.PNG">
+
+<h1>Accessing the AWS Console</h1>
+<img src="images/Slide8.PNG">
+
+<p>Click the Open AWS Console link</p>
+<img src="images/Slide9.PNG">
+
+<p>Click the Switch to new Console Home button</p>
+<img src="images/Slide10.PNG">
+
+<h1>Start a CloudShell session</h1>
+<img src="images/Slide11.PNG">
+
+<p>Close the CloudShell welcome screen</p>
+<img src="images/Slide12.PNG">
+
+<p>Wait for the CloudShell to initialize</p>
+<img src="images/Slide13.PNG">
+
+<h1>Install lab resources</h1>
+<p>Now we will install the lab resources we need to provision basic network configuration as well as the Cloud9 online IDE.</p>
+<img src="images/Slide14.PNG">
+
+<p>As we will be using the CDK for deploying the basic VPC and networks, we need to first bootstrap the CDK envrionment. Wait for the bootstrapping to complete.<p>
+<img src="images/Slide15.PNG">
+
+<h1>Open CloudFormation</h1>
+<p>Open CloudFormation in a new tab</p>
+<img src="images/Slide16.PNG">
+
+<p>Verify that the status is CREATE_COMPLETE for the CDKToolkit stack.</p>
+<img src="images/Slide17.PNG">
+
+<h1>Deploying the networking stack</h1>
+<img src="images/Slide18.PNG">
+
+<p>Verify that the status of the network stack in the CloudFormation Console is CREATE_IN_PROGRESS or CREATE_COMPLETE.</p>
+<img src="images/Slide19.PNG">
+
+<p>Wait for the CDK to show a green checkmark for the network stack in the console.</p>
+<img src="images/Slide20.PNG">
+
+<p>Verify that the network stack indeed is created in the CloudFormation Console.</p>
+<img src="images/Slide21.PNG">
+
+<!--
+<h1>22</h1>
+<img src="images/Slide22.PNG">
+
+<h1>23</h1>
+<img src="images/Slide23.PNG">
+
+<h1>24</h1>
+<img src="images/Slide24.PNG">
+
+<h1>25</h1>
+<img src="images/Slide25.PNG">
+
+<h1>26</h1>
+<img src="images/Slide26.PNG">
+
+<h1>27</h1>
+<img src="images/Slide27.PNG">
+
+<h1>28</h1>
+<img src="images/Slide28.PNG">
+
+<h1>29</h1>
+<img src="images/Slide29.PNG">
+-->
+
+<h1>Create a Cloud9 environment</h1>
+<p>We will now be provisioning a Cloud9 online IDE environment, which will be used for most labs. Start by giving the environment the name 'acc-day-cloud9-env'. Use the same for the description field or leave it empty. Click 'Next Step'.</p>
+<img src="images/Slide30.PNG">
+
+<p>On the 'Configure settings' tab choose the option 'Create a new no-ingress EC2...'. This is very important as your Cloud9 environment will otherwise fail to provision correctly. This is because we are running the Cloud9 IDE in a private subnet, as you will see shortly.</p>
+<p>For instance type choose 'Other instance type' and select 't3.micro'.</p>
+<img src="images/Slide31.PNG">
+
+<p>Now configure the network. Choose the VPC named 'acc-day-glue-vpc' and the subnet 'acc-day-glue-private-sne'. Note that it HAS to be the PRIVATE subnet NOT the PUBLIC one. Click 'Next Step'.</p>
+<img src="images/Slide32.PNG">
+
+<p>Verify the settings and if correct choose 'Create environment' and otherwise go back and correct it using the 'Previous step' button.</p>
+<img src="images/Slide33.PNG">
+
+<h1>Configuring the Cloud9 IDE</h1>
+<p>A Cloud9 windows should automatically appear at this point, and after a while it will display a 'Welcome' screen.</p>
+<img src="images/Slide34.PNG">
+
+<p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red with a white cross.</p>
+<img src="images/Slide35.PNG">
+<p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Run the command below and verify that the output shows that you are using a role that contains the text 'TeamRole'.</p>
+
+#code
+
+<p>We will now clone some of the lab resources. Run the code below.</p>
+
+#code
+
+<img src="images/Slide36.PNG">
+
+<p>Finally we will verify that the CDK is working by running a simple CDK command.</p>
+
+# code 
+<img src="images/Slide37.PNG">
+
+<p>Congratulations! You are now ready for the labs.</p>
+
+<div class="footer">
+    © 2022, Amazon Web Services, Inc. or its affiliates.
+</div>
+</body>
+</html>

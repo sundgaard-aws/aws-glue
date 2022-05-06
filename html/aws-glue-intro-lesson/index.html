@@ -172,19 +172,29 @@ Write data to DynamoDB instead of MySQL
 
 #runjob
 
-<h1>Lab 13 - Write large data sets to no-sql-db using partioning</h1>
+<h1>Lab 13 - Write large data sets to DynamoDB using partioning</h1>
+<p>
 Run job.
 Up number of glue workers to match num partitions (6).
 Run job again.
 Note diff if any.
+</p>
 
-<h1>Lab 14 - Glue crawler for DynamoDB</h1>
+#runjob
+
+<h1>Lab 14 - Create an AWS Glue Crawler for DynamoDB</h1>
+<p>
+
+</p>
 Create glue crawler for DynamoDB table.
 Create glue DB.
 Run crawler on demand.
 
-<h1>lab 16 - glue crawler for MySQL</h1>
-In the RDS MySQL DB
+<h1>lab 16 - Create an AWS Glue Crawler for MySQL</h1>
+<p>
+When creating a crawler for MySQL or any other relation database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.
+</p>
+
 <ul>
 <li>Create counterparty table.</li>
 <li>Insert data into counterparty table.</li>
@@ -192,16 +202,18 @@ In the RDS MySQL DB
 <li>Create crawler for RDS MySQL DB (tradedb/%)</li>
 </ul>
 
-<h1>Lab 17 - bookmarks (optional)</h1>
+<h1>Lab 17 - Create a job using the UI</h1>
 <ul>
     <li>Create UI job transferring data from counterparty to cpty</li>
-    <li>Insert more data into counterparty table.</li>
-    <li>Note that only new rows are transferred.</li>
+    <li>Disable bookmarks.</li>    
 </ul>
 
-<h1>Lab 25 - bookmarks (optional)</h1>
+<h1>Lab 25 - Run a delta job using bookmarks (optional)</h1>
+<p>
+    Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store.
+</p>
 <ul>
-    <li>Enable and define bookmark</li>
+    <li>Enable bookmarks</li>
     <li>Read existing data</li>
     <li>Verify that data is written to target</li>
     <li>Add more data to source</li>
