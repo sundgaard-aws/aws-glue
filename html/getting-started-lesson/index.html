@@ -27,7 +27,7 @@
 <p>Next you must specify your email. It has to be a valid email address that you can access, and it MUST be the email address that you specified to the event administrator, prior to the event. Click 'Send passcode'.</p>
 <img src="images/Slide4.PNG">
 
-<p>You should receive a passcode from AWS Training in your mailbox shortly. Copy that passcode.</p>
+<p>You should receive a passcode from AWS Training in your mailbox shortly. Copy the passcode.</p>
 <img src="images/Slide6.PNG">
 
 <p>Now go back to the browser tab with the OTP dialog. Paste in the passcode and click 'Sign in'.</p>
@@ -39,75 +39,70 @@
 <h1>Accessing the AWS Console</h1>
 <img src="images/Slide8.PNG">
 
-<p>Click the Open AWS Console link</p>
+<p>Click the 'Open AWS Console' link.</p>
 <img src="images/Slide9.PNG">
 
-<p>Click the Switch to new Console Home button</p>
+<p>Click the 'Switch to new Console Home' button.</p>
 <img src="images/Slide10.PNG">
 
-<h1>Start a CloudShell session</h1>
+<h1>Access AWS CloudShell</h1>
+<p>Start a CloudShell session by clicking the small shell icon at the top, or by using this <a href="https://eu-west-1.console.aws.amazon.com/cloudshell/home" target="_blank">link</a>.</p>
 <img src="images/Slide11.PNG">
 
-<p>Close the CloudShell welcome screen</p>
+<p>Close the CloudShell welcome screen.</p>
 <img src="images/Slide12.PNG">
 
-<p>Wait for the CloudShell to initialize</p>
+<p>Wait for the CloudShell to initialize.</p>
 <img src="images/Slide13.PNG">
 
 <h1>Install lab resources</h1>
-<p>Now we will install the lab resources we need to provision basic network configuration as well as the Cloud9 online IDE.</p>
+<p>Now we will install the lab resources we need to provision basic network configuration as well as the Cloud9 online IDE. Let us start by cloning the resources from the git repository containing the lab resources.</p>
 <img src="images/Slide14.PNG">
+
+<div class="code">
+    mkdir git<br>
+    cd git<br>
+    git clone https://github.com/sundgaard-aws/aws-glue.git<br>
+    yum install typescript<br>
+    sudo npm install -g aws-cdk@latest<br>
+</div>
 
 <p>As we will be using the CDK for deploying the basic VPC and networks, we need to first bootstrap the CDK envrionment. Wait for the bootstrapping to complete.<p>
 <img src="images/Slide15.PNG">
 
-<h1>Open CloudFormation</h1>
-<p>Open CloudFormation in a new tab</p>
+<div class="code">
+    cd aws-glue/iac/cdk<br>
+    cdk bootstrap<br>
+</div>
+
+<h1>Track deployment progress using CloudFormation</h1>
+<p>To view the progress of what is being depoyed, we will be using AWS CloudFormation. Open CloudFormation in a new tab by searching for it in the 'Services' search field. Right click the 'CloudFormation' icon an choose 'Open in new tab'.</p>
 <img src="images/Slide16.PNG">
 
 <p>Verify that the status is CREATE_COMPLETE for the CDKToolkit stack.</p>
 <img src="images/Slide17.PNG">
 
 <h1>Deploying the networking stack</h1>
+<p>We will now deploy the basic network components using the CDK. We can do this by specifying just the name of the network stack using wildcards, as per the code below.</p>
+
+<div class="code">
+    cdk deploy *network*<br>
+</div>
+
 <img src="images/Slide18.PNG">
 
-<p>Verify that the status of the network stack in the CloudFormation Console is CREATE_IN_PROGRESS or CREATE_COMPLETE.</p>
+<p>Accept to deploy the changes by typing 'y' and pressing 'Enter'. Verify that the status of the network stack in the <a href="https://eu-west-1.console.aws.amazon.com/cloudformation" target="_blank">CloudFormation Console</a> is CREATE_IN_PROGRESS or CREATE_COMPLETE.</p>
+
 <img src="images/Slide19.PNG">
 
 <p>Wait for the CDK to show a green checkmark for the network stack in the console.</p>
 <img src="images/Slide20.PNG">
 
-<p>Verify that the network stack indeed is created in the CloudFormation Console.</p>
+<p>Verify that the network stack indeed is created in the <a href="https://eu-west-1.console.aws.amazon.com/cloudformation" target="_blank">CloudFormation Console</a>.</p>
 <img src="images/Slide21.PNG">
 
-<!--
-<h1>22</h1>
-<img src="images/Slide22.PNG">
-
-<h1>23</h1>
-<img src="images/Slide23.PNG">
-
-<h1>24</h1>
-<img src="images/Slide24.PNG">
-
-<h1>25</h1>
-<img src="images/Slide25.PNG">
-
-<h1>26</h1>
-<img src="images/Slide26.PNG">
-
-<h1>27</h1>
-<img src="images/Slide27.PNG">
-
-<h1>28</h1>
-<img src="images/Slide28.PNG">
-
-<h1>29</h1>
-<img src="images/Slide29.PNG">
--->
-
 <h1>Create a Cloud9 environment</h1>
-<p>We will now be provisioning a Cloud9 online IDE environment, which will be used for most labs. Start by giving the environment the name 'acc-day-cloud9-env'. Use the same for the description field or leave it empty. Click 'Next Step'.</p>
+<p>We will now be provisioning a Cloud9 online IDE environment, which will be used for most labs. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9 Console</a>. Start by giving the environment the name 'acc-day-cloud9-env'. Use the same for the description field or leave it empty. Click 'Next Step'.</p>
 <img src="images/Slide30.PNG">
 
 <p>On the 'Configure settings' tab choose the option 'Create a new no-ingress EC2...'. This is very important as your Cloud9 environment will otherwise fail to provision correctly. This is because we are running the Cloud9 IDE in a private subnet, as you will see shortly.</p>
@@ -128,17 +123,27 @@
 <img src="images/Slide35.PNG">
 <p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Run the command below and verify that the output shows that you are using a role that contains the text 'TeamRole'.</p>
 
-#code
+<div class="code">
+    aws sts get-caller-identity<br>
+</div>
 
-<p>We will now clone some of the lab resources. Run the code below.</p>
+<p>We will now clone some of the lab resources. We did this as well in the CloudShell, but remember that this time we are using Cloud9, which has some more advanced features. Run the code below.</p>
 
-#code
+<div class="code">
+    mkdir git<br>
+    cd git<br>
+    git clone https://github.com/sundgaard-aws/aws-glue.git<br>
+</div>
 
 <img src="images/Slide36.PNG">
 
 <p>Finally we will verify that the CDK is working by running a simple CDK command.</p>
 
-# code 
+<div class="code">
+    cd aws-glue/iac/cdk<br>
+    cdk diff *network*<br>
+</div>
+
 <img src="images/Slide37.PNG">
 
 <p>Congratulations! You are now ready for the labs.</p>
