@@ -18,7 +18,8 @@
 
 
 <h1>Accessing AWS Event Engine</h1>
-<p>In this guide we will help you get started by accessing AWS Event Engine, the AWS CloudShell as well as Cloud9. Let us start by pasting the URL of the event in a browser tab. Use an incognito browser to ensure that you are not using credentials from your own AWS account. Chrome and Firefox browsers are preferred.</p>
+<p>In this guide we will help you get started by accessing AWS Event Engine, the AWS CloudShell as well as Cloud9.  Use your browser in incognito or privacy mode to ensure that you are not using credentials from your own AWS account. Chrome and Firefox browsers are preferred. Navigate to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a>.</p>
+<p>Paste the team hash that was provided by your Event Administrator and click 'Accept Terms &amp; Login'.</p>
 <img src="images/Slide2.PNG">
 
 <p>You will be required to login using an OTP. Choose this option to continue.</p>
@@ -37,6 +38,7 @@
 <img src="images/Slide7.PNG">
 
 <h1>Accessing the AWS Console</h1>
+<p>Once you are signed in to the Event Engine Team Dashboard, click the 'AWS Console' button.</p>
 <img src="images/Slide8.PNG">
 
 <p>Click the 'Open AWS Console' link.</p>
@@ -121,7 +123,16 @@
 
 <p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red with a white cross.</p>
 <img src="images/Slide35.PNG">
-<p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Run the command below and verify that the output shows that you are using a role that contains the text 'TeamRole'.</p>
+<p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Navigate back to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a> and copy your AWS credentials. Go back to Cloud9 and paste them in the terminal as per the code below.</p>
+
+<div class="code">
+    export AWS_DEFAULT_REGION=eu-west-1<br>
+    export AWS_ACCESS_KEY='your-key'<br>
+    export AWS_SECRET_ACCESS='your-secret'<br>
+    export AWS_SESSION_TOKEN='your-token'<br>
+</div>    
+
+<p>Finally, run the command below and verify that the output shows that you are using a role that contains the text 'TeamRole'.</p>
 
 <div class="code">
     aws sts get-caller-identity<br>
