@@ -18,11 +18,12 @@
 
 <h1>Prerequisites</h1>
 <p>
-If not already done, please complete the <a href="">Getting Started</a> lesson first. Next log in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. The Python code for all labs are available via the GitHub link that was cloned earlier.
+If not already done, please complete the <a href="https://www.eventbox.dev/staging/lesson/event-engine-getting-started/index.html" target="_blank">Getting Started</a> lesson first. Next log in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. The Python code for all labs, and all infrastructure code, is available via the <a href="https://github.com/sundgaard-aws/aws-glue.git" target="_blank">GitHub link</a> that was cloned earlier. Run the code below in a Cloud9 terminal.
 </p>
 
 <div class="code">
-cdk deploy --all
+    cd aws-glue/iac/cdk<br>
+    cdk deploy --all<br>
 </div>
 
 <p>You can roughly expect the following runtimes for the different stacks that are deployed as part of this process.</p>
@@ -35,18 +36,23 @@ cdk deploy --all
 
 <h1 id="lab-0">Lab 0 - Setup</h1>
 <p>
-If not already done, start by logging in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. Next we will first ensure that the AWS credentials used are the right ones, and next we will start to copy some sample data to their respective S3 buckets.
+If not already done, start by logging in to <a href="https://eu-west-1.console.aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>. Next we will ensure that the AWS credentials used are the right ones. After that we will start to copy some sample data to their respective S3 buckets. First let us ensure that the credentials are correct.
 </p>
 
 <div class="code">
-# ensure you are using Event Engine credentials<br/>
-aws sts get-caller-identity<br/>
+    # ensure you are using Event Engine credentials<br/>
+    aws sts get-caller-identity<br/>
+</div>
+
+<p>If the 'Role' contains the phrase 'TeamRole' then you are using the right credentials. You can continue using by running the code below, otherwise go back to the <a href="https://www.eventbox.dev/staging/lesson/event-engine-getting-started/index.html" target="_blank">Getting Started Guide</a>.</p>
+<div class="code">
 aws s3 ls | grep input<br/>
 echo please type &quot;trade-input-bucket-name&quot;<br/>
 read tradeInputBucket<br/>
 cd ~/environment/git/aws-glue/python/trade-import<br/>
 python generate-large-data-file.py<br/>
 python generate-huge-data-file.py<br/>
+echo copying generated files to S3 locations...<br/>
 aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.json s3://$tradeInputBucket/<br/>
 aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.csv s3://$tradeInputBucket/<br/>
 aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-large.csv s3://$tradeInputBucket/<br/>
@@ -54,20 +60,19 @@ aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-huge.csv s3://$
 aws s3 ls | grep driver<br/>
 echo please type &quot;driver-bucket-name&quot;<br/>
 read driverBucket<br/>
+echo downloading mysql jdbc driver...<br/>
 cd /tmp/<br/>
 wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar<br/>
+echo copying jdbc driver to s3...<br/>
 aws s3 cp mysql-connector-java-8.0.25.jar s3://$driverBucket/<br/>
+echo done.<br/>
 </div>
 
-<p>Once all files has been copied to S3, verify that the files are in the buckets using either the AWS CLI or the <a href="https://eu-west-1.console.aws.amazon.com/s3/" target="_blank">Amazon S3 Console</a>.</p>
-
-<ul>
-<li>Create target table &quot;trade&quot; in MySQL (for performance reasons).</li>
-</ul>
+<p>Once all files have been copied to S3, verify that the files are in the buckets using either the AWS CLI or the <a href="https://eu-west-1.console.aws.amazon.com/s3/" target="_blank">Amazon S3 Console</a>.</p>
 
 <h1 id="lab-1">Lab 1 - Creating a basic job</h1>
 <p>
-In this lab we will be running an &quot;Empty&quot; boilerplate job just with context and logging defined in the Python script. The job is already created for you by the CDK deployment that you run earlier. You can view and run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using #Cloud9.</p>
+In this lab we will be running an &quot;Empty&quot; boilerplate job just with context and logging defined in the Python script. The job is already created for you by the CDK deployment that you run earlier. You can view and run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">Cloud9</a>.</p>
 <p>Try both to get a feeling of the pros and cons.<br/></p>
 
 <div class="code">
@@ -76,48 +81,103 @@ aws glue start-job-run --job-name acc-day-glue-lab1<br/>
 aws glue get-job-runs --job-name acc-day-glue-lab1 --output table<br/>
 </div>
 
-<p>Note the output logs in CloudWatch as well as the timings for the run.</p>
+<p>Note the output logs in #CloudWatch as well as the timings for the run.</p>
 
 <h1>Lab 2 - Read secret from AWS Secrets Manager</h1>
 <p>
 In this second lab we will be reading a database secret from AWS Secrets Manager. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/" target="_blank">AWS Secrets Manager</a> to view the secret as well as the secret values.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab2<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab2 --output table<br/>
+</div>
+
+<p>
+Once the job has completed, open #CloudWatch and note that we are printing out the entire secret. This is obviously only viable for a temporary demo environment, and not something you would do in your own envionments. If the values are displayed correctly, we know that the the job has been configured correctly and that we have the right permissions defined for the execution role used.
+</p>
 
 <h1>Lab 3 - Read CSV data from Amazon S3</h1>
 <p>
 Now that we have the basics in place, we will actually start to read data from an S3 object store. AWS Glue has the concept of <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-extensions-dynamic-frame.html" target="_blank">DynamicFrames</a> which is a more dynamic version of the more well known Python DataFrames. In most cases, reading data in to a DynamicFrame will be the first actual step in any Glue ETL job.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab3<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab3 --output table<br/>
+</div>
+
+<p>
+    Once the job has completed, open #CloudWatch and note that we are printing out the contents of the data frame. This confirms that data is read correctly from the S3 bucket. Note that we are printing both the Glue dynamic frame, which will be printed as JSON and the converted Python data frame that will be printed as table text.
+</p>
 
 <h1>Lab 4 - Trim data in source data frame</h1>
 <p>
 Often source data comes in all shapes and sizes and can be filled with unexpected characters, whitespaces and much more. In the previous lab, did you notice some potential issues with the input file? Actually there were whitespaces in front of most of the values, which would cause problems as part of the type conversion process. You can verify this by looking at the JSON print out in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>. In this lab we will make sure that all whitespaces are trimmed.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab4<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab4 --output table<br/>
+</div>
+
+<p>
+    Once the job has completed, open #CloudWatch and note that again we are printing out the contents of the data frame. This time though we are printing out the trimmed frame as well. You should be able to see that the whitespace characters from the orignal frame are now gone.
+</p>
 
 <h1>Lab 5 - Apply mappings</h1>
 <p>
     After reading the data we want to map it to the target schema. This is done using the apply() method of the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-transforms-ApplyMapping.html" target="_blank">ApplyMapping</a> class. The ApplyMapping class is one of the AWS Glue classes in the <a href="https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-transforms.html" target="_blank">Transforms</a> namespace. Feel free to investigate the other classes in this namespace when time allows.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab5<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab5 --output table<br/>
+</div>
+
+<p>
+    Once the job has completed, open #CloudWatch and verify that it has successfully printed the 'done applying mapping rules.' line.
+</p>
 
 <h1>Lab 6 - Write to target Amazon RDS MySQL DB</h1>
 <p>
 So far we have been reading data from Amazon S3, and we have trimmed/prepared and mapped the data to the target database schema. In this lab we will actually be writing the data to the target data store. We will be writing to Amazon RDS for MySQL, which is a managed MySQL compatible relational database offering from AWS.
 </p>
 
-#runjob
+<p>For performance reasons it may be a good idea to create a target table &quot;trade&quot; in the MySQL database. This will ensure that smaller 'varchar' columns are used over 'text' columns, and that a primary key is defined.</p>
 
 <p>
-Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from Cloud9. Please ensure that you have configured the RDS security group to allow inbound connections from Cloud9 for the MySQL port, as described earlier. The job will only insert a few records in this lab, so it is safe to select all contents from the table using the code below.
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
 </p>
 
-#code
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab6<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab6 --output table<br/>
+</div>
+
+<p>
+Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a>. Please ensure that you have configured the <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">RDS security group</a> to allow inbound connections from Cloud9 for the MySQL port, as described earlier. The job will only insert a few records in this lab, so it is safe to select all contents from the table using the code below.
+</p>
+
+<div class="code">
+    mysql] select * from trade;<br/>
+</div>
 
 <h1>Lab 7 - Read JSON data from S3</h1>
 <p>
@@ -127,7 +187,10 @@ Once the job has completed, connect to the MySQL database instance, using the My
     Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
 </p>
 
-#runjob
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab7<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab7 --output table<br/>
+</div>
 
 <p>
     Once the job has completed open #cwlink and notice the output from the DynamicFrame that has been read.
@@ -140,7 +203,14 @@ Often when dealing with ETL jobs you will be working with thousands or even mill
 In this lab we will load 1M rows from a CSV file, and investigate the runtime metrics and logs produced by the job. This will give us an idea of the speed that you can expect from AWS Glue with the given settings. Also note the job details for the job, which specifies both the number of workers and the instance type used, being to of the most critical components when right sizing AWS Glue ETL jobs.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab8<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab8 --output table<br/>
+</div>
 
 <h1>Lab 9 - import huge data set (SKIP or let timeout)</h1>
 Import large data set 20M+ rows.<br/>
@@ -155,14 +225,28 @@ For decades most databases have been relational databases or so called RDBMS. Fo
 Write data to DynamoDB instead of MySQL
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab10<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab10 --output table<br/>
+</div>
 
 <h1>Lab 11 - Write large data sets to Amazon Dynamodb</h1>
 <p>
 In this lab we will be writing a larger data set to Amazon DynamoDB. As DynamoDB is a serverless NoSQL database it will automatically scale to optimize for increased database activity. This means that the database should not be the bottleneck in this scenario.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab11<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab11 --output table<br/>
+</div>
 
 <p>After the job has completed, investigate the timings and logs in #CloudWatch to get a better feeling of where time was spent during this run.</p>
 
@@ -172,7 +256,14 @@ To optimize how we write to a data target, we can make use of paritions. Partiti
 </p>
 <p>With our current data set we only have one partition. We will force our data set to have more partitions by reshuffling the data in the DynamicFrame. We will not be writing to any data store in this lab.</p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab12<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab12 --output table<br/>
+</div>
 
 <p>Once the job has completed, investigate the number of partitions before and after the repartitioning in #CloudWatch.</p>
 
@@ -184,7 +275,14 @@ Run job again.
 Note diff if any.
 </p>
 
-#runjob
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab13<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab13 --output table<br/>
+</div>
 
 <h1>Lab 14 - Create an AWS Glue Crawler for DynamoDB</h1>
 <p>

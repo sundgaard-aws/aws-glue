@@ -65,13 +65,14 @@
     mkdir git<br>
     cd git<br>
     git clone https://github.com/sundgaard-aws/aws-glue.git<br>
-    yum install typescript<br>
+    sudo npm install -g typescript<br>
     sudo npm install -g aws-cdk@latest<br>
 </div>
 
 <p>As we will be using the CDK for deploying the basic VPC and networks, we need to first bootstrap the CDK envionment. Run the commands below, and wait for the bootstrapping to complete.<p>
-<div class="code">
+<div class="code">    
     cd aws-glue/iac/cdk<br>
+    npm install<br>
     cdk bootstrap<br>
 </div>   
 <img src="images/Slide15.PNG">
@@ -109,7 +110,7 @@
 
 <p>On the 'Configure settings' tab choose the option 'Create a new no-ingress EC2...'.</p>
 <p>This is <b>very important</b> as your Cloud9 environment will otherwise fail to provision correctly. This is because we are running the Cloud9 IDE in a private subnet, as you will see shortly.</p>
-<p>For 'Instance type' choose 'Other instance type' and select 't3.micro'.</p>
+<p>For 'Instance type' choose 'Other instance type' and select 't3.xlarge'.</p>
 <img src="images/Slide31.PNG">
 
 <p>Now configure the network. Choose the VPC named 'acc-day-glue-vpc' and the subnet 'acc-day-glue-private-sne'. Note that it HAS to be the PRIVATE subnet NOT the PUBLIC one. Click 'Next Step'.</p>
@@ -119,7 +120,7 @@
 <img src="images/Slide33.PNG">
 
 <h1>Configuring the Cloud9 IDE</h1>
-<p>A Cloud9 windows should automatically appear at this point, and after a while it will display a 'Welcome' screen.</p>
+<p>A Cloud9 window should automatically appear at this point, and after a while it will display a 'Welcome' screen.</p>
 <img src="images/Slide34.PNG">
 
 <p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red, with a white cross as per the screenshot below.</p>
@@ -154,12 +155,22 @@
 
 <div class="code">
     cd aws-glue/iac/cdk<br>
+    npm install -g aws-cdk@latest --force<br>
+    npm install<br>
     cdk diff *network*<br>
 </div>
 
 <img src="images/Slide37.PNG">
 
 <p>Congratulations! You are now ready for the labs.</p>
+
+<p>You can continue to your individual track using the links below. </p>
+<ul>
+    <li><a href="https://github.com/peerjako-aws/cdktf-csharp-examples">CDK Track</a></li>
+    <li><a href="https://github.com/peerjako-aws/cdktf-csharp-examples">CDK Track</a></li>
+    <li><a href="https://www.eventbox.dev/staging/lesson/awsglue101/index.html">AWS Glue</a></li>
+    <li><a href="https://github.com/peerjako-aws/cdktf-csharp-examples">CDK Track</a></li>
+</ul>
 
 <div class="footer">
     &copy; 2022, Amazon Web Services, Inc. or its affiliates.
