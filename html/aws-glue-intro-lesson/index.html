@@ -67,9 +67,8 @@ aws s3 cp mysql-connector-java-8.0.25.jar s3://$driverBucket/<br/>
 
 <h1 id="lab-1">Lab 1 - Creating a basic job</h1>
 <p>
-Run an &quot;Empty&quot; job just with context and logging.<br/>
-You can run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using Cloud9. Try both.<br/>
-</p>
+In this lab we will be running an &quot;Empty&quot; boilerplate job just with context and logging defined in the Python script. The job is already created for you by the CDK deployment that you run earlier. You can view and run it either via the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or the AWS CLI using #Cloud9.</p>
+<p>Try both to get a feeling of the pros and cons.<br/></p>
 
 <div class="code">
 aws glue list-jobs<br/>
@@ -160,17 +159,22 @@ Write data to DynamoDB instead of MySQL
 
 <h1>Lab 11 - Write large data sets to Amazon Dynamodb</h1>
 <p>
-
+In this lab we will be writing a larger data set to Amazon DynamoDB. As DynamoDB is a serverless NoSQL database it will automatically scale to optimize for increased database activity. This means that the database should not be the bottleneck in this scenario.
 </p>
 
 #runjob
+
+<p>After the job has completed, investigate the timings and logs in #CloudWatch to get a better feeling of where time was spent during this run.</p>
 
 <h1>Lab 12 - Using multiple partitions</h1>
 <p>
-
+To optimize how we write to a data target, we can make use of paritions. Partitioning is a way of slicing your data in to logical groups, that can be handled separately or in parallel. By partitioning your data you can increase both read and write performance significantly. In this lab we will be focusing on write paritioning to speed up the database writes.
 </p>
+<p>With our current data set we only have one partition. We will force our data set to have more partitions by reshuffling the data in the DynamicFrame. We will not be writing to any data store in this lab.</p>
 
 #runjob
+
+<p>Once the job has completed, investigate the number of partitions before and after the repartitioning in #CloudWatch.</p>
 
 <h1>Lab 13 - Write large data sets to DynamoDB using partioning</h1>
 <p>
@@ -184,31 +188,41 @@ Note diff if any.
 
 <h1>Lab 14 - Create an AWS Glue Crawler for DynamoDB</h1>
 <p>
-
+    For the next couple of labs, you will not be using a pre-created Glue job and script. Instead you will be using the AWS Console UI to complete these labs. This will give you a feel for how the UI experience is for Glue.</p>
+<p>
+    A crawler will crawl a given data source (i.e. DB, S3 bucket or similar). During the crawling it will identify the data schemas, as well as partitions, keys and other meta data.
+    Create glue DB. In this lab we will be creating a <a href="https://docs.aws.amazon.com/glue/latest/dg/crawler-running.html" target="_blank">Glue crawler</a> for the DynamoDB table that we loaded trades to in a previous lab (lab 10).
 </p>
-Create glue crawler for DynamoDB table.
-Create glue DB.
-Run crawler on demand.
+<p>Open the 'burger' menu on the left side. Navigate to 'Crawlers' and create a new crawler.</p>
+<img src="images/add-crawler.png">
+<p>Choose DynamoDB as source, and choose the table 'acc-day-glue-trades'. Ignore the S3 crawl options and continue through the wizard with the 'DynamoDB' option.</p>
+<img src="images/crawler-add-data-store.png">
+<p>Use the same IAM role as in previous labs. You can check the name on the Glue job details tab, if you have not noticed. Choose to run the crawler 'on demand'. As we have not yet created an AWS Glue database, we will need to create one to contain our table schemas. Create a Glue database named 'acc-day-glue-database' and choose to prefix tables with 'ddb_trades_' so that they can be identified easily.</p> 
+<img src="images/crawler-add-database.png">
+<p>Leave everything else as is. Finish the wizard. The crawler should now show on the list of crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run now' in the green banner. Wait for the crawler to complete the run. Click the '1' under the 'tables added' column, and investigate the table meta data.</p>
+<img src="images/crawler-run.png">
 
 <h1>lab 16 - Create an AWS Glue Crawler for MySQL</h1>
-<p>
-When creating a crawler for MySQL or any other relation database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.
+<p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relation database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.
 </p>
 
+<img src="https://thebrillianthealth.org/wp-content/uploads/2021/10/realistic-coming-soon-background_23-2148889082.jpg">
+
+<div class="code">
 <ul>
 <li>Create counterparty table.</li>
 <li>Insert data into counterparty table.</li>
 <li>Create cpty table.</li>
 <li>Create crawler for RDS MySQL DB (tradedb/%)</li>
 </ul>
+</div>
 
 <h1>Lab 17 - Create a job using the UI</h1>
-<ul>
-    <li>Create UI job transferring data from counterparty to cpty</li>
-    <li>Disable bookmarks.</li>    
-</ul>
+<p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'counterparty' to the target table 'cpty'. The two tables were already created in the previous exercise.<p>
 
-<h1>Lab 25 - Run a delta job using bookmarks (optional)</h1>
+<p>As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'.</p>
+
+<h1>Lab 18 - Run a delta job using bookmarks (optional)</h1>
 <p>
     Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store.
 </p>
@@ -221,7 +235,7 @@ When creating a crawler for MySQL or any other relation database that has the co
     <li>Verify that only new data is read/written to target</li>
 </ul>
 
-<h1>lab 26 - reset bookmark (optional)</h1>
+<h1>lab 19 - Resetting bookmarks (optional)</h1>
 <ul>
     <li>Reset bookmark</li>
 </ul>

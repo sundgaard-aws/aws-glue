@@ -19,7 +19,7 @@
 
 <h1>Accessing AWS Event Engine</h1>
 <p>In this guide we will help you get started by accessing AWS Event Engine, the AWS CloudShell as well as Cloud9.  Use your browser in incognito or privacy mode to ensure that you are not using credentials from your own AWS account. Chrome and Firefox browsers are preferred. Navigate to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a>.</p>
-<p>Paste the team hash that was provided by your Event Administrator and click 'Accept Terms &amp; Login'.</p>
+<p>Paste the event hash that was provided by your Event Administrator and click 'Accept Terms &amp; Login'.</p>
 <img src="images/Slide2.PNG">
 
 <p>You will be required to login using an OTP. Choose this option to continue.</p>
@@ -69,23 +69,23 @@
     sudo npm install -g aws-cdk@latest<br>
 </div>
 
-<p>As we will be using the CDK for deploying the basic VPC and networks, we need to first bootstrap the CDK envrionment. Wait for the bootstrapping to complete.<p>
-<img src="images/Slide15.PNG">
-
+<p>As we will be using the CDK for deploying the basic VPC and networks, we need to first bootstrap the CDK envionment. Run the commands below, and wait for the bootstrapping to complete.<p>
 <div class="code">
     cd aws-glue/iac/cdk<br>
     cdk bootstrap<br>
-</div>
+</div>   
+<img src="images/Slide15.PNG">
+
 
 <h1>Track deployment progress using CloudFormation</h1>
-<p>To view the progress of what is being depoyed, we will be using AWS CloudFormation. Open CloudFormation in a new tab by searching for it in the 'Services' search field. Right click the 'CloudFormation' icon an choose 'Open in new tab'.</p>
+<p>To view the progress of what is being depoyed, we will be using AWS CloudFormation. Open CloudFormation in a new tab by searching for it in the 'Services' search field, right click the 'CloudFormation' icon an choose 'Open in new tab'. You can also use this <a href="https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks" target="_blank">direct link</a>.</p>
 <img src="images/Slide16.PNG">
 
 <p>Verify that the status is CREATE_COMPLETE for the CDKToolkit stack.</p>
 <img src="images/Slide17.PNG">
 
 <h1>Deploying the networking stack</h1>
-<p>We will now deploy the basic network components using the CDK. We can do this by specifying just the name of the network stack using wildcards, as per the code below.</p>
+<p>We will now deploy the basic network components using the CDK. We can do this by specifying the name of just the network stack using wildcards, as per the code below.</p>
 
 <div class="code">
     cdk deploy *network*<br>
@@ -93,7 +93,7 @@
 
 <img src="images/Slide18.PNG">
 
-<p>Accept to deploy the changes by typing 'y' and pressing 'Enter'. Verify that the status of the network stack in the <a href="https://eu-west-1.console.aws.amazon.com/cloudformation" target="_blank">CloudFormation Console</a> is CREATE_IN_PROGRESS or CREATE_COMPLETE.</p>
+<p>Accept to deploy the changes by typing 'y' and pressing 'Enter'. Verify that the status of the network stack in the <a href="https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks" target="_blank">CloudFormation Console</a> is CREATE_IN_PROGRESS or CREATE_COMPLETE.</p>
 
 <img src="images/Slide19.PNG">
 
@@ -107,22 +107,23 @@
 <p>We will now be provisioning a Cloud9 online IDE environment, which will be used for most labs. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9 Console</a>. Start by giving the environment the name 'acc-day-cloud9-env'. Use the same for the description field or leave it empty. Click 'Next Step'.</p>
 <img src="images/Slide30.PNG">
 
-<p>On the 'Configure settings' tab choose the option 'Create a new no-ingress EC2...'. This is very important as your Cloud9 environment will otherwise fail to provision correctly. This is because we are running the Cloud9 IDE in a private subnet, as you will see shortly.</p>
-<p>For instance type choose 'Other instance type' and select 't3.micro'.</p>
+<p>On the 'Configure settings' tab choose the option 'Create a new no-ingress EC2...'.</p>
+<p>This is <b>very important</b> as your Cloud9 environment will otherwise fail to provision correctly. This is because we are running the Cloud9 IDE in a private subnet, as you will see shortly.</p>
+<p>For 'Instance type' choose 'Other instance type' and select 't3.micro'.</p>
 <img src="images/Slide31.PNG">
 
 <p>Now configure the network. Choose the VPC named 'acc-day-glue-vpc' and the subnet 'acc-day-glue-private-sne'. Note that it HAS to be the PRIVATE subnet NOT the PUBLIC one. Click 'Next Step'.</p>
 <img src="images/Slide32.PNG">
 
-<p>Verify the settings and if correct choose 'Create environment' and otherwise go back and correct it using the 'Previous step' button.</p>
+<p>Verify the settings, and when correct choose 'Create environment' and otherwise go back and correct it, using the 'Previous step' button.</p>
 <img src="images/Slide33.PNG">
 
 <h1>Configuring the Cloud9 IDE</h1>
 <p>A Cloud9 windows should automatically appear at this point, and after a while it will display a 'Welcome' screen.</p>
 <img src="images/Slide34.PNG">
 
-<p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red with a white cross.</p>
-<img src="images/Slide35.PNG">
+<p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red, with a white cross as per the screenshot below.</p>
+<img src="images/Slide35a.PNG">
 <p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Navigate back to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a> and copy your AWS credentials. Go back to Cloud9 and paste them in the terminal as per the code below.</p>
 
 <div class="code">
@@ -137,6 +138,7 @@
 <div class="code">
     aws sts get-caller-identity<br>
 </div>
+<img src="images/Slide35b.PNG">
 
 <p>We will now clone some of the lab resources. We did this as well in the CloudShell, but remember that this time we are using Cloud9, which has some more advanced features. Run the code below.</p>
 
