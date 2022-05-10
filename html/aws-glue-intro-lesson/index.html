@@ -81,7 +81,7 @@ aws glue start-job-run --job-name acc-day-glue-lab1<br/>
 aws glue get-job-runs --job-name acc-day-glue-lab1 --output table<br/>
 </div>
 
-<p>Note the output logs in #CloudWatch as well as the timings for the run.</p>
+<p>Note the output logs in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> as well as the timings for the run.</p>
 
 <h1>Lab 2 - Read secret from AWS Secrets Manager</h1>
 <p>
@@ -98,7 +98,7 @@ In this second lab we will be reading a database secret from AWS Secrets Manager
 </div>
 
 <p>
-Once the job has completed, open #CloudWatch and note that we are printing out the entire secret. This is obviously only viable for a temporary demo environment, and not something you would do in your own envionments. If the values are displayed correctly, we know that the the job has been configured correctly and that we have the right permissions defined for the execution role used.
+Once the job has completed, open <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> and note that we are printing out the entire secret. This is obviously only viable for a temporary demo environment, and not something you would do in your own envionments. If the values are displayed correctly, we know that the the job has been configured correctly and that we have the right permissions defined for the execution role used.
 </p>
 
 <h1>Lab 3 - Read CSV data from Amazon S3</h1>
@@ -116,7 +116,7 @@ Now that we have the basics in place, we will actually start to read data from a
 </div>
 
 <p>
-    Once the job has completed, open #CloudWatch and note that we are printing out the contents of the data frame. This confirms that data is read correctly from the S3 bucket. Note that we are printing both the Glue dynamic frame, which will be printed as JSON and the converted Python data frame that will be printed as table text.
+    Once the job has completed, open <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> and note that we are printing out the contents of the data frame. This confirms that data is read correctly from the S3 bucket. Note that we are printing both the Glue dynamic frame, which will be printed as JSON and the converted Python data frame that will be printed as table text.
 </p>
 
 <h1>Lab 4 - Trim data in source data frame</h1>
@@ -134,7 +134,7 @@ Often source data comes in all shapes and sizes and can be filled with unexpecte
 </div>
 
 <p>
-    Once the job has completed, open #CloudWatch and note that again we are printing out the contents of the data frame. This time though we are printing out the trimmed frame as well. You should be able to see that the whitespace characters from the orignal frame are now gone.
+    Once the job has completed, open <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> and note that again we are printing out the contents of the data frame. This time though we are printing out the trimmed frame as well. You should be able to see that the whitespace characters from the orignal frame are now gone.
 </p>
 
 <h1>Lab 5 - Apply mappings</h1>
@@ -152,7 +152,7 @@ Often source data comes in all shapes and sizes and can be filled with unexpecte
 </div>
 
 <p>
-    Once the job has completed, open #CloudWatch and verify that it has successfully printed the 'done applying mapping rules.' line.
+    Once the job has completed, open <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> and verify that it has successfully printed the 'done applying mapping rules.' line.
 </p>
 
 <h1>Lab 6 - Write to target Amazon RDS MySQL DB</h1>
@@ -248,7 +248,7 @@ In this lab we will be writing a larger data set to Amazon DynamoDB. As DynamoDB
     aws glue get-job-runs --job-name acc-day-glue-lab11 --output table<br/>
 </div>
 
-<p>After the job has completed, investigate the timings and logs in #CloudWatch to get a better feeling of where time was spent during this run.</p>
+<p>After the job has completed, investigate the timings and logs in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> to get a better feeling of where time was spent during this run.</p>
 
 <h1>Lab 12 - Using multiple partitions</h1>
 <p>
@@ -265,15 +265,10 @@ To optimize how we write to a data target, we can make use of paritions. Partiti
     aws glue get-job-runs --job-name acc-day-glue-lab12 --output table<br/>
 </div>
 
-<p>Once the job has completed, investigate the number of partitions before and after the repartitioning in #CloudWatch.</p>
+<p>Once the job has completed, investigate the number of partitions before and after the repartitioning in <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>.</p>
 
 <h1>Lab 13 - Write large data sets to DynamoDB using partioning</h1>
-<p>
-Run job.
-Up number of glue workers to match num partitions (6).
-Run job again.
-Note diff if any.
-</p>
+<p> Now that we have learned a way to parition our data, we will be loading data in to DynamoDB using multiple paritions. Multiple partitions will allow AWS Glue to run multiple workers in parallel and thus speed up the write process. We will be loading a fairly big data set of 1M rows. Start by running the job with the default of just 2 workers.</p>
 
 <p>
     Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
@@ -284,6 +279,10 @@ Note diff if any.
     aws glue get-job-runs --job-name acc-day-glue-lab13 --output table<br/>
 </div>
 
+<p>
+Note the timings. Then up the number of workers to 6, on the job details tab. Run the job again and note the different timings. Feel free to play around with the number of workers and partitions if you have spare time.
+</p>
+
 <h1>Lab 14 - Create an AWS Glue Crawler for DynamoDB</h1>
 <p>
     For the next couple of labs, you will not be using a pre-created Glue job and script. Instead you will be using the AWS Console UI to complete these labs. This will give you a feel for how the UI experience is for Glue.</p>
@@ -291,52 +290,107 @@ Note diff if any.
     A crawler will crawl a given data source (i.e. DB, S3 bucket or similar). During the crawling it will identify the data schemas, as well as partitions, keys and other meta data.
     Create glue DB. In this lab we will be creating a <a href="https://docs.aws.amazon.com/glue/latest/dg/crawler-running.html" target="_blank">Glue crawler</a> for the DynamoDB table that we loaded trades to in a previous lab (lab 10).
 </p>
+
 <p>Open the 'burger' menu on the left side. Navigate to 'Crawlers' and create a new crawler.</p>
 <img src="images/add-crawler.png">
 <p>Choose DynamoDB as source, and choose the table 'acc-day-glue-trades'. Ignore the S3 crawl options and continue through the wizard with the 'DynamoDB' option.</p>
+
 <img src="images/crawler-add-data-store.png">
-<p>Use the same IAM role as in previous labs. You can check the name on the Glue job details tab, if you have not noticed. Choose to run the crawler 'on demand'. As we have not yet created an AWS Glue database, we will need to create one to contain our table schemas. Create a Glue database named 'acc-day-glue-database' and choose to prefix tables with 'ddb_trades_' so that they can be identified easily.</p> 
+
+<p>Use the same IAM role as in previous labs. You can check the name on the Glue job details tab, if you have not noticed. Choose to run the crawler 'on demand'. As we have not yet created an AWS Glue database, we will need to create one to contain our table schemas. Create a Glue database named 'acc-day-glue-database' and choose to prefix tables with 'ddb_trades_' so that they can be identified easily.</p>
+
 <img src="images/crawler-add-database.png">
-<p>Leave everything else as is. Finish the wizard. The crawler should now show on the list of crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run now' in the green banner. Wait for the crawler to complete the run. Click the '1' under the 'tables added' column, and investigate the table meta data.</p>
+
+<p>Leave everything else as is. Finish the wizard. The crawler should now show on the list of crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run it now' button inside the green banner. Wait for the crawler to complete the run. Click the '1' under the 'Tables added' column, and investigate the table meta data.</p>
+
 <img src="images/crawler-run.png">
 
-<h1>lab 16 - Create an AWS Glue Crawler for MySQL</h1>
-<p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relation database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.
+<h1>Lab 16 - Create an AWS Glue Crawler for MySQL</h1>
+<p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relational database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.</p>
+<p>Start by connecting to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
 </p>
 
-<img src="https://thebrillianthealth.org/wp-content/uploads/2021/10/realistic-coming-soon-background_23-2148889082.jpg">
+<div class="code">
+    mysql -h [db-prefix].eu-west-1.rds.amazonaws.com -u [dbuser] -p[dbPW] tradedb<br/>
+</div>
 
 <div class="code">
-<ul>
-<li>Create counterparty table.</li>
-<li>Insert data into counterparty table.</li>
-<li>Create cpty table.</li>
-<li>Create crawler for RDS MySQL DB (tradedb/%)</li>
-</ul>
+    <br/>
+    create table cpty (<br/>
+    cpty_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,<br/>
+    short_name varchar(30),<br/>
+    full_name varchar(100),<br/>
+    external_id varchar(50),<br/>
+    region varchar(20)<br/>
+);<br/>
+<br/>
+insert into cpty values(null, 'COMP_A', 'COMPANY A', 'F-312331', 'EUROPE');<br/>
+insert into cpty values(null, 'COMP_B', 'COMPANY B', 'IOA-90005', 'US');<br/>
+insert into cpty values(null, 'COMP_F', 'COMPANY F', 'PLJJH-22-KRTT', 'AFRICA');<br/>
+insert into cpty values(null, 'COMP_G', 'COMPANY G', 'F-222322', 'EUROPE');<br/>
+<br/>
+create table counterparty (<br/>
+    counterpartyid int PRIMARY KEY NOT NULL AUTO_INCREMENT,<br/>
+    shortname varchar(30),<br/>
+    fullname varchar(100),<br/>
+    extid varchar(50)<br/>
+);<br/>
+<br/>
 </div>
+
+<p>Just like we did with the DynamoDB crawler, go through the AWS Glue Crawler wizard, but this time you will need to choose JDBC as the datastore. Also you will need to use the connection we created earlier, to reach MySQL as it runs inside a VPC, and you will need to choose the correct IAM Role and Security Group. See if you can figure it out yourself. Below is a screenshot that will guide you a bit. If you get stuck ask for help.</p>
+
+<img src="images/crawler-mysql-add-data-store.png" alt="">
+
+<p>Once you complete the wizard, the crawler should will shot on the crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run it now' button inside the green banner. Wait for the crawler to complete the run. Click the '2' under the 'Tables added' column, and investigate the table meta data. As we are crawling the entire database, Glue will find two tables as we added two more tables. The third table is not crawled as it has no data yet.</p>
 
 <h1>Lab 17 - Create a job using the UI</h1>
 <p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'counterparty' to the target table 'cpty'. The two tables were already created in the previous exercise.<p>
 
-<p>As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'.</p>
+<p>As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'. Otherwise see if you can figure out how to create the job yourself using the UI. Remember to name your job 'acc-day-glue-lab17'. You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
+
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab17<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab17 --output table<br/>
+</div>
+
+<p>At this point you can login to the MySQL database like we did previously in the Cloud9 terminal, if you are not still logged in. Both tables should now contain the same rows. Run the queries below to verify that the data transfer was successful.</p>
+
+<div class="code">
+    select * from cpty;<br/>
+    select * from counterparty;<br/>
+</div>
 
 <h1>Lab 18 - Run a delta job using bookmarks (optional)</h1>
 <p>
-    Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store.
+    Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store. In this lab you will be using the job that you created in the previous lab as a starting point. Start by cloning the job, you can do this directly using the UI. Rename the job to 'acc-day-glue-lab18'. Next change the bookmark settings in the job details tab to 'Enabled'. Run the new job and verify the contents of the target table has not changed. As we have defined primary keys for the tables, AWS Glue will use these to keep track of what has been transferred already.
 </p>
-<ul>
-    <li>Enable bookmarks</li>
-    <li>Read existing data</li>
-    <li>Verify that data is written to target</li>
-    <li>Add more data to source</li>
-    <li>Read data again</li>
-    <li>Verify that only new data is read/written to target</li>
-</ul>
+<p>
+    Insert a few more rows in the source table. Use the MySQL terminal as you did previously and run the commands below.
+</p>
 
-<h1>lab 19 - Resetting bookmarks (optional)</h1>
-<ul>
-    <li>Reset bookmark</li>
-</ul>
+<div class="code">
+    insert into cpty values(null, 'COMP_Y', 'COMPANY Y', '00888-6655PP', 'ASIA');<br/>
+    insert into cpty values(null, 'COMP_X', 'COMPANY X', '00334-110I', 'ASIA');<br/>
+</div>
+
+<p>
+    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+</p>
+
+<div class="code">
+    aws glue start-job-run --job-name acc-day-glue-lab18<br/>
+    aws glue get-job-runs --job-name acc-day-glue-lab18 --output table<br/>
+</div>
+
+<p>Verify the contents of the target database. It should now also contain the rows that we just added to the source table. This is a nice way to transfer data in chunks, meaning that you could choose to transfer data several times a day, daily, weekly or at any schedule that matches your usage pattern.</p>
+
+<h1>Lab 19 - Resetting bookmarks (optional)</h1>
+<p>In this final lab we will be testing the reset bookmark functionality. You have the option to reset bookmarks for a given job at any time. This will erase all track of progress for the Glue job. Try to reset the job in the previous lab. Run the job and notice what happens.</p>
 
 <div class="footer">
     &copy; 2022, Amazon Web Services, Inc. or its affiliates.
