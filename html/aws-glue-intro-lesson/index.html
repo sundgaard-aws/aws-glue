@@ -172,11 +172,20 @@ So far we have been reading data from Amazon S3, and we have trimmed/prepared an
 </div>
 
 <p>
-Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a>. Please ensure that you have configured the <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">RDS security group</a> to allow inbound connections from Cloud9 for the MySQL port, as described earlier. The job will only insert a few records in this lab, so it is safe to select all contents from the table using the code below.
+Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a>. Please ensure that you have configured the <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">RDS security group</a> to allow inbound connections from Cloud9 for the MySQL port.
+</p>
+
+<p>Once the job has completed, connect to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
 </p>
 
 <div class="code">
-    mysql] select * from trade;<br/>
+    mysql -h [db-prefix].eu-west-1.rds.amazonaws.com -u [dbuser] -p[dbPW] tradedb<br/>
+</div>
+
+<p>The job will only insert a few records in this lab, so it is safe to select all contents from the table using the code below, in order to verify that the job works as excpected.</p>
+
+<div class="code">
+    select * from trade;<br/>
 </div>
 
 <h1>Lab 7 - Read JSON data from S3</h1>
@@ -193,7 +202,7 @@ Once the job has completed, connect to the MySQL database instance, using the My
 </div>
 
 <p>
-    Once the job has completed open #cwlink and notice the output from the DynamicFrame that has been read.
+    Once the job has completed open <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a> and notice the output from the DynamicFrame that has been read.
 </p>
 
 <h1>Lab 8 - Import large data set</h1>
@@ -307,7 +316,7 @@ Note the timings. Then up the number of workers to 6, on the job details tab. Ru
 
 <h1>Lab 16 - Create an AWS Glue Crawler for MySQL</h1>
 <p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relational database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.</p>
-<p>Start by connecting to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
+<p>Start by connecting to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL, if you did not already do this in 'Lab6'. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
 </p>
 
 <div class="code">
@@ -391,6 +400,10 @@ create table counterparty (<br/>
 
 <h1>Lab 19 - Resetting bookmarks (optional)</h1>
 <p>In this final lab we will be testing the reset bookmark functionality. You have the option to reset bookmarks for a given job at any time. This will erase all track of progress for the Glue job. Try to reset the job in the previous lab. Run the job and notice what happens.</p>
+
+<p>Congratulations, you made it through all the labs. Good work and please continue to do great things with AWS.</p>
+
+<img src="images/badge_2.jpg">
 
 <div class="footer">
     &copy; 2022, Amazon Web Services, Inc. or its affiliates.
