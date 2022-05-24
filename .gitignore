@@ -2,6 +2,6 @@ local
 bin
 obj
 drivers
-*large.csv
+*large*.csv
 *huge.csv
 html/*/*.zip
