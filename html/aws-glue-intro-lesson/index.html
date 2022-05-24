@@ -354,7 +354,7 @@ create table counterparty (<br/>
 <p>Once you complete the wizard, the crawler should will shot on the crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run it now' button inside the green banner. Wait for the crawler to complete the run. Click the '2' under the 'Tables added' column, and investigate the table meta data. As we are crawling the entire database, Glue will find two tables as we added two more tables. The third table is not crawled as it has no data yet.</p>
 
 <h1>Lab 17 - Create a job using the UI</h1>
-<p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'counterparty' to the target table 'cpty'. The two tables were already created in the previous exercise.<p>
+<p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'cpty' to the target table 'counterparty'. The two tables were already created in the previous exercise.<p>
 
 <p>As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'. Otherwise see if you can figure out how to create the job yourself using the UI. Remember to name your job 'acc-day-glue-lab17'. You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
 
