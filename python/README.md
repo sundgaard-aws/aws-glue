@@ -9,3 +9,6 @@ https://www.tutorialspoint.com/python-pandas-how-to-delete-a-row-from-a-datafram
 
 # Pandas - Selecting data from DataFrame
 https://pandas.pydata.org/docs/user_guide/indexing.html
+
+# Lambda Layers
+https://github.com/keithrozario/Klayers/tree/master/deployments/python3.9
