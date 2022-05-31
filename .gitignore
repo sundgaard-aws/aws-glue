@@ -5,3 +5,5 @@ drivers
 *large*.csv
 *huge.csv
 html/*/*.zip
+*layer*.zip
+**/trade-import/lib*
