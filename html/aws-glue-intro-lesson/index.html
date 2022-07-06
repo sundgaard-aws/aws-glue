@@ -402,6 +402,88 @@ create table counterparty (<br/>
 <p>In this final lab we will be testing the reset bookmark functionality. You have the option to reset bookmarks for a given job at any time. This will erase all track of progress for the Glue job. Try to reset the job in the previous lab. Run the job and notice what happens.</p>
 
 
+<h1>DAY 2 ===============================================</h1>
+
+* *OK => Lab 30:* Write partitioning with Amazon S3 (s3=>s3, huge by ccy)
+    * In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.
+    * Note how data is structured in separate partitions in the target folder.
+* *OK => Lab 31:* Merging files in partitions with Amazon S3
+    * AWS Glue is based on Apache Spark which again is optimized for big data and massive parallelized processing. When working with files it is common, for this reason, that both input and output files are split in to multiple files.
+    * We will continue from the previous exercise. As you noted in the previous lab, each of the target partition folders have multiple files within them. At times it is necessary to merge the files in a target folder to a single file. This can be done with some simple scripting.
+* *OK =>Lab 32:* Nested write partitions with Amazon S3 (s3=>s3, huge by date and ccy)
+    * There are several reasons why you would want to use partitioning. It can be used to organize and parallelize data, but it is also useful to filter or read just a specific partition to quickly narrow down the wanted data set.
+    * In this exercise we will create nested partitions, meaning that data will first be partitioned by “date” and next by “ccy“.
+* *OK => Lab 33:* Create Aurora PostgreSQL DB and Crawler
+    * So far we have only been using S3, MySQL and DynamoDB. We will now add a PostgreSQL compatible database using Amazon Aurora Serverless.
+    * Open the file “./iac/lib/data-stack.ts”.
+    * Uncomment the line with the text “this.createRDSAuroraPostgreSqlDB” by removing the to slashes.
+    * Run the command below:
+        * npx cdk deploy *
+    * This will deploy a new Aurora PostgreSQL database.
+    * Wait for it to finalize
+    * Install psql by running the commands below:
+        * yum install...
+    * Connect to the database in Cloud9 by running the command below:
+        * psql ...
+    * When prompted for the pw, navigate to Secrets Manager and find the secret for the new Aurora DB.
+    * Paste the pw in the psql prompt
+    * Once connected switch to the proper DB
+        * \connect tm_aurora_db
+    * Next create a trade table by running the commands in the file “create-trade-table-psql.sql”.
+    * Next navigate to crawlers
+    * Create a new Glue connection using JDBC 
+        * Name it “aurora-glue-conn”
+        * using the following string for the JDBC part jdbc://???
+    * Create a new crawler
+        * Specify crawler name “aurora-crawler”
+        * Create Glue DB “all-dbs”
+        * Specify the connection “aurora-glue-conn”
+    * When done, choose to run the crawler
+    * Once the crawler has completed, verify that it has found the “trade” table.
+* *OK => Lab 34:* Custom transforms (using Glue UI)
+    * AWS Glue has both UI and scripting capabilities. In some cases you may want to use the UI to get started quickly and to get an idea of how your script could look like. When using the UI, even though many functions are available out of the box, you may find yourself missing some functionality.
+    * For this reason you can use “custom transforms” in AWS Glue. This will allow you to write custom transformation snippets while still maintaining the UI state of a job.
+    * ???
+* *OK => Lab 35:* Using include libraries
+    * The more ETL jobs you write, the more code and functionality you will find yourself repeating across jobs. To avoid situations where code maintenance becomes a burden, it is often helpful to generalize your code and wrap it as a reusable function.
+    * Functions can be placed in modules (for Python), which can be either zip archive files or simply .py files. You can maintain and store these files as with any other code in your code repository of choice. As part of your CI/CD deployments you can make these modules available on S3, and include them in any of your AWS Glue jobs.
+    * In this exercise we will be moving some of the general functions that we have created in previous exercises to a separate Python module. We will then upload the module to S3 and include them in a job.
+    * NEW-use-python-libs
+* *OK => Lab 36:* Using AWS Glue - Interactive Sessions (embedded Jupyter notebooks) - NEW!
+
+* *OK => Lab 37:* Aggregate amounts by trader using UI
+    * Create a new blank job
+    * Read from the AWS Glue “s3-large” table that we created by crawling an s3 bucket earlier
+    * Choose the “aggregate” function under the “Transform” menu
+    * Choose “trader_id“ as the group by
+    * Choose “trade_amount” as sum
+    * Run the job.
+    * Verify that the run is successful.
+    * At this time you are not able to view the final output, we will improve that in the coming two labs.
+* *OK => Lab 38:* Aggregate amounts by trader using notebook
+    * Create a new notebook job and copy the various parts of the script from the previous lab to individual cells in the notebook. 
+    * Run them step by step and note the individual timings. 
+    * Try to change the grouping and sum columns to get a feel for what is possible and the related timings.
+    * ????
+* *OK => Lab 39:* Create aggregation reports
+    * Clone the job from Lab 37, rename it to create-aggregation-reports. Choose “edit script“. 
+    * Aggregate amounts by “trader_id” in one stream, and by “currency” (ccy) in another stream. 
+    * Write the resulting data frames to two individual CSV files in the S3 “xxx-trade/reports/” bucket. 
+    * Name them “aggregated-amounts-by-trader“  and “aggregated-amounts-by-ccy“.
+    * After job completion download and open the files using Excel.
+    * Convert the two columns from text to columns and specify comma as the separator
+    * Add filtering.
+    * Analyze the data to verify that it looks as you would expect based on the input.
+* *Lab 40:* Cleanup GDPR data
+    * Generate a data set consisting of synthetic PII by running the script “generate-large-synthetic-pii.py”
+    * Upload the data set to the “trade-input” s3 bucket.
+    * Create a new job.
+    * Choose the newly generated CSV file “synthetic-pii.csv” that we just uploaded as source.
+    * 
+* *OK => Lab 41:* Performance comparison using notebook
+
+
+
 <h1>Lab 40</h1>
 <p>ddd</p>
 <div class="code">
