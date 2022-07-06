@@ -35,6 +35,14 @@ export class ComputeStack extends Stack {
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab11", codePathRoot+"lab11.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab12", codePathRoot+"lab12.py", logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab13", codePathRoot+"lab13.py", logGroup);
+
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab29", codePathRoot+"lab29.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab30", codePathRoot+"lab30.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab31", codePathRoot+"lab31.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab37", codePathRoot+"lab37.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab39", codePathRoot+"lab39.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab40", codePathRoot+"lab40.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab41", codePathRoot+"lab41.py", logGroup);
         /*this.createSimpleETLJob(this.glueExecutionRole, "lab8", codePathRoot+"lab8.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab9", codePathRoot+"lab9.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab10", codePathRoot+"lab10.py");*/

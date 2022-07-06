@@ -404,22 +404,37 @@ create table counterparty (<br/>
 </p>
 <h1>DAY 2 ===============================================</h1>
 
-<h1>Lab 30 - * *OK => Lab 30:* Write partitioning with Amazon S3 (s3=>s3, huge by ccy)</h1>
+<h1>Lab 29 - Write partitioning with Amazon S3 (s3=>s3 - no parition key)</h1>
 <p>
     * In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.<br/>
-    * Note how data is structured in separate partitions in the target folder.<br/>
+    * We will not be specifying a partition key in this lab, but AWS Glue are paritioning even though.<br/>
+    * Note how data is structured in separate partitions (multiple files) in the target folder.<br/>
+    * Open one or more of the files to verify the contents.<br/>
 </p>
 
-<h1>Lab 31 - * *OK => Lab 31:* Merging files in partitions with Amazon S3</h1>
+<h1>Lab 30 - Write partitioning with Amazon S3</h1>
+<p>
+    * In this exercise we will be creating partitions in an S3 target bucket. The source will again be a CSV file containing 20M rows of trade data.<br/>
+    * This time we will specify "ccy" as the parition key on the target bucket.<br/>
+    * Note how data is structured in first divded in to multiple partitions, one per ccy, and next it has multiple files per partition.<br/>
+    * Open one or more of the files to verify the contents.<br/>
+</p>
+
+<h1>Lab 31 - Merging files in partitions with Amazon S3</h1>
 <p>
     * AWS Glue is based on Apache Spark which again is optimized for big data and massive parallelized processing. When working with files it is common, for this reason, that both input and output files are split in to multiple files.<br/>
     * We will continue from the previous exercise. As you noted in the previous lab, each of the target partition folders have multiple files within them. At times it is necessary to merge the files in a target folder to a single file. This can be done with some simple scripting.<br/>
+    * Go to the scripting tag of the lab.</br>
+    * Try to understand the details of the loop that is doing the merge and writing the consolidated files to s3.</br>
+    * Run the job and verify the status.</br>
+    * Go to the s3 console and verify that there is a "merged.csv" file in each partition folder.</br>
+    * Open one or more of the merged files to verify that the contents are correct.</br>
 </p>
 
-<h1>Lab 32 - * *OK =>Lab 32:* Nested write partitions with Amazon S3 (s3=>s3, huge by date and ccy)</h1>
+<h1>Lab 32 - Nested write partitions with Amazon S3 (s3=>s3, huge by date and ccy)</h1>
 <p>
     * There are several reasons why you would want to use partitioning. It can be used to organize and parallelize data, but it is also useful to filter or read just a specific partition to quickly narrow down the wanted data set.<br/>
-    * In this exercise we will create nested partitions, meaning that data will first be partitioned by “date” and next by “ccy“.<br/>
+    * In this exercise we will create nested partitions, meaning that data will first be partitioned by "date" and next by "ccy".<br/>
 </p>    
 
 <h1>Lab 33 - * *OK => Lab 33:* Create Aurora PostgreSQL DB and Crawler</h1>
@@ -452,14 +467,14 @@ create table counterparty (<br/>
     * Once the crawler has completed, verify that it has found the “trade” table.<br/>
 </p>
 
-<h1>Lab 34 - * *OK => Lab 34:* Custom transforms (using Glue UI)</h1>
+<h1>Lab 34 - Custom transforms (using Glue UI)</h1>
 <p>
     * AWS Glue has both UI and scripting capabilities. In some cases you may want to use the UI to get started quickly and to get an idea of how your script could look like. When using the UI, even though many functions are available out of the box, you <br/>may find yourself missing some functionality.<br/>
     * For this reason you can use “custom transforms” in AWS Glue. This will allow you to write custom transformation snippets while still maintaining the UI state of a job.<br/>
     * ???<br/>
 </p>    
 
-<h1>Lab 35 - * *OK => Lab 35:* Using include libraries</h1>
+<h1>Lab 35 - Using include libraries</h1>
 <p>
     * The more ETL jobs you write, the more code and functionality you will find yourself repeating across jobs. To avoid situations where code maintenance becomes a burden, it is often helpful to generalize your code and wrap it as a reusable function.<br/>
     * Functions can be placed in modules (for Python), which can be either zip archive files or simply .py files. You can maintain and store these files as with any other code in your code repository of choice. As part of your CI/CD deployments you can make these modules available on S3, and include them in any of your AWS Glue jobs.<br/>
@@ -468,7 +483,7 @@ create table counterparty (<br/>
 * *OK => Lab 36:* Using AWS Glue - Interactive Sessions (embedded Jupyter notebooks) - NEW!<br/>
 </p>    
 
-<h1>Lab 37 - * *OK => Lab 37:* Aggregate amounts by trader using UI</h1>
+<h1>Lab 37 - Aggregate amounts by trader using UI</h1>
 <p>
     * Create a new blank job<br/>
     * Read from the AWS Glue “s3-large” table that we created by crawling an s3 bucket earlier<br/>
@@ -480,7 +495,7 @@ create table counterparty (<br/>
     * At this time you are not able to view the final output, we will improve that in the coming two labs.<br/>
 </p>
 
-<h1>Lab 38 - * *OK => Lab 38:* Aggregate amounts by trader using notebook</h1>
+<h1>Lab 38 - Aggregate amounts by trader using notebook</h1>
 <p>
     * Create a new notebook job and copy the various parts of the script from the previous lab to individual cells in the notebook. <br/>
     * Run them step by step and note the individual timings. <br/>
@@ -488,7 +503,7 @@ create table counterparty (<br/>
     * ????<br/>
 </p>
 
-<h1>Lab 39 - * *OK => Lab 39:* Create aggregation reports</h1>
+<h1>Lab 39 - Create aggregation reports</h1>
 <p>
     * Clone the job from Lab 37, rename it to create-aggregation-reports. Choose “edit script“. <br/>
     * Aggregate amounts by “trader_id” in one stream, and by “currency” (ccy) in another stream. <br/>
@@ -510,29 +525,50 @@ create table counterparty (<br/>
     Verify that it contains exactly 1M rows if you deduct headers and empty lines at the end<br/>
 </p>
 
-<h1>Lab 41</h1>
-<p>ddd</p>
-<div class="code">
-    aws s3 ls | grep input<br/>
-    echo please type &quot;trade-bucket-name&quot;<br/>
-    read tradeBucket<br/>
-    cd ~/environment/git/aws-glue/python/trade-import<br/>
-    python generate-large-synthetic-pii.py<br/>
-    echo copying generated files to S3 locations...<br/>
-    aws s3 cp ~/environment/git/aws-glue/sample-data/pii/synthetic-pii.csv s3://$tradeBucket/<br/>
-</div>
+<h1>Lab 41 - Cleanup PII</h1>
 </p>
-* *Lab 41:* Cleanup GDPR data
-    * Generate a data set consisting of synthetic PII by running the script “generate-large-synthetic-pii.py”
-    * Upload the data set to the “trade-input” s3 bucket.
-    * Create a new job.
-    * Choose the newly generated CSV file “synthetic-pii.csv” that we just uploaded as source.
+    * Generate a data set consisting of synthetic PII by running the script “generate-large-synthetic-pii.py”<br/>
+    * Upload the data set to the “trade-input” s3 bucket.<br/>
+    * Create a new job.<br/>
+    * Choose the newly generated CSV file “synthetic-pii.csv” that we just uploaded as source.<br/>
     * 
-    <h1>Lab 42</h1>
+
+<h1>Lab 42 - Create table for performance metrics</h1>
 <p>
-    
+    * Performance and metrics are an important part of understanding your ETL jobs. AWS Glue shows a number of metrics related to runtime, status, CPU, memory and more. Compute nodes backing AWS Glue will only run when used to reduce costs. This means that for short running jobs (a few minutes or seconds), the warm up time has a big impact on the total time spent. In order to better understand what takes time, we can easily add more metrics to CloudWatch or any place that we desire to log such metrics. In the following labs we will be gathering such metrics for some of the jobs that we previously created.<br/>
+    * Let us start by creating a table for holding the metrics in the postresql database.<br/>
+    * Login to psql as previously and create a table as per the code below.<br/>
+    <div class="code">
+        create table perf_metrics (
+        entry_id int PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY,
+        job_name varchar(80),
+        duration decimal,
+        entry_time timestamp
+        );<br/>
+    </div>
 </p>
-* *OK => Lab 42:* Performance comparison using notebook
+
+<h1>Lab 43 - Collect performance metrics</h1>
+<p>
+    * We now have our table in place, and it is time to collect some metrics from jobs run in previous labs.<br/>
+    * Pick five or more jobs that you found pariculary interesting.<br/>
+    * In the script part of those jobs add a call to startStopwatch() and stopStopwatch() where you find it appropriate. As a rule of thumb you would like to surround the time consuming blocks of code. If you are unsure, you can add the first call just after function definitions and the stop just before the job.commit statement.<br/>
+    <div class="code">
+        startStopwatch()<br/>
+        stopStopwatch()<br/>
+    </div>
+</p>
+
+
+<h1>Lab 50 - Performance comparison using notebook</h1>
+<p>
+    * This is a freestyle bonus exercise. If you still have time left, it is time to see the power or AWS Glue notebooks and interactive sessions. You can reuse the notebook that we created in "lab38", or you can create a new one, and name it "lab50".<br/>
+    * Once the notebook is ready to use, find interesting code snippets from previous labs on the script tab of those labs, and copy the snippets to individual cells on the notebook.<br/>
+    * Note the timings of the individual snippets, either using your own stopwatch or by using the stopwatch methods that we used in "lab43".<br/>
+    * While experimenting an creating code for new jobs, you will most likely find it much faster to use a notebook. The main reason for this, is that you do not have to wait for instances starting up every time you run a seperate code snippet. Also you are able to jump back and fort between cells, and modify code on the fly.<br/>
+    * Try out as many things as you can until you are out of time.<br/>
+    * Also be aware that you will have to use "magics" in order to configure the VPC connection that we have used in many of the previous labs. Can you figure out how to configure that?<br/>
+</p>
 
 
 
