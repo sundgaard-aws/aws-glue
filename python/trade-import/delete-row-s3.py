@@ -5,7 +5,7 @@ import boto3
 #import fsspec
 #import s3fs
 
-print("started data generation at ["+str(datetime.datetime.now())+"]...")
+print("started row deletion at ["+str(datetime.datetime.now())+"]...")
 
 bucket = "acc-day-glue-trade-input-bucket"
 file_name = "fx-trades-large-with-id.csv"
@@ -35,4 +35,4 @@ df.to_csv("s3://"+bucket+"/fx-trades-large-with-id-cleaned.csv",encoding="UTF-8"
 #s3_resource = boto3.resource('s3')
 #s3_resource.Object(bucket, cleanedFileName).put(Body=csv_buffer.getvalue())
 
-print("data generation ended at ["+str(datetime.datetime.now())+"].")
+print("completed row deletion at ["+str(datetime.datetime.now())+"].")

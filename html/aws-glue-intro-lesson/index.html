@@ -401,6 +401,19 @@ create table counterparty (<br/>
 <h1>Lab 19 - Resetting bookmarks (optional)</h1>
 <p>In this final lab we will be testing the reset bookmark functionality. You have the option to reset bookmarks for a given job at any time. This will erase all track of progress for the Glue job. Try to reset the job in the previous lab. Run the job and notice what happens.</p>
 
+
+<h1>Lab 40</h1>
+<p>ddd</p>
+<div class="code">
+    aws s3 ls | grep input<br/>
+    echo please type &quot;trade-bucket-name&quot;<br/>
+    read tradeBucket<br/>
+    cd ~/environment/git/aws-glue/python/trade-import<br/>
+    python generate-large-synthetic-pii.py<br/>
+    echo copying generated files to S3 locations...<br/>
+    aws s3 cp ~/environment/git/aws-glue/sample-data/pii/synthetic-pii.csv s3://$tradeBucket/<br/>
+</div>
+
 <p>Congratulations, you made it through all the labs. Good work and please continue to do great things with AWS.</p>
 
 <img src="images/badge_2.jpg">

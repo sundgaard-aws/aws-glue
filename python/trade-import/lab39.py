@@ -169,7 +169,7 @@ print("duration="+str(duration))
 
 tradeTargetBucket = getParameter("acc-day-glue-trade-bucket-name")["Parameter"]["Value"]
 targetS3PathPrefix="s3://"+tradeTargetBucket+"/reports/"
-writeCSVToS3(aggregatedAmountsByTrader, targetS3PathPrefix+"aggregated-amount-by-trader.csv");
-writeCSVToS3(aggregatedAmountsByCurrency, targetS3PathPrefix+"aggregated-amount-by-ccy.csv");
+writeCSVToS3(aggregatedAmountsByTrader, targetS3PathPrefix+"aggregated-amount-by-trader");
+writeCSVToS3(aggregatedAmountsByCurrency, targetS3PathPrefix+"aggregated-amount-by-ccy");
 
 job.commit()
