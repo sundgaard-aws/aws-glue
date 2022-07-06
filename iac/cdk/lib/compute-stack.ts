@@ -91,32 +91,22 @@ export class ComputeStack extends Stack {
             assumedBy: new ServicePrincipal("glue.amazonaws.com"),
             managedPolicies: [
                 ManagedPolicy.fromAwsManagedPolicyName("CloudWatchFullAccess"),
-                //ManagedPolicy.fromAwsManagedPolicyName("AWSGlueServiceRole"),
                 ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSGlueServiceRole"),
-                //ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMFullAccess"),
-                //ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaSQSQueueExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"),
-                //ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaBasicExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"),
-                //ManagedPolicy.fromManagedPolicyArn(this, "AWSLambdaVPCAccessExecutionRole", "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole")
             ],
         });
         role.addToPolicy(new PolicyStatement({
           effect: Effect.ALLOW,
           resources: ["*"],
           actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query","dynamodb:DescribeTable"]
-          //           "cloudwatch:*",   "logs:*", "glue:GetConnection"
         }));
-        /*role.addToPolicy(new PolicyStatement({
-            effect: Effect.ALLOW,
-            resources: ["*"],
-            actions: ["glue:GetConnection","ec2:DescribeSubnets","ec2:DescribeSecurityGroups"]
-            //           "cloudwatch:*",   "logs:*", "glue:GetConnection"
-          }));*/
-        /*role.addToPolicy(new PolicyStatement({
-            effect: Effect.ALLOW,
-            resources: ["*"],
-            actions: ["secretsmanager:GetSecretValue","dbqms:*","rds-data:*","xray:*","dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:Scan","dynamodb:Query"]
-        }));*/
 
+        // Needed to run Jupyter notebook from within Glue
+        role.addToPolicy(new PolicyStatement({
+            effect: Effect.ALLOW,
+            resources: ["*"],
+            actions: ["iam:PassRole"]
+        }));
+        
         Tags.of(role).add(MetaData.NAME, MetaData.PREFIX+"execution-role");
         return role;
     }       

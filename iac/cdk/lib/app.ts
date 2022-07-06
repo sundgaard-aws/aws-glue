@@ -13,11 +13,15 @@ import { SecurityStack } from './security-stack';
 const app = new App();
 var region = process.env["CDK_DEFAULT_REGION"];
 region = "eu-west-1"; // override
+const recreateS3Buckets=false;
 var props = {env: {account: process.env["CDK_DEFAULT_ACCOUNT"], region: region } };
 var metaData = new MetaData();
 
 var networkStack = new NetworkStack(app, MetaData.PREFIX+"network-stack", props);
 var securityStack = new SecurityStack(app, MetaData.PREFIX+"security-stack", networkStack.Vpc, props);
 var computeStack = new ComputeStack(app, MetaData.PREFIX+"compute-stack", networkStack.Vpc, securityStack.GlueVPCNetworkConnectionSecurityGroup, props);
-new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc,  securityStack.MySQLSecurityGroup, computeStack.glueExecutionRole, region, props);
+new DataStack(app, MetaData.PREFIX+"data-stack", networkStack.Vpc,  securityStack.MySQLSecurityGroup, securityStack.AuroraPostgreSqlSecurityGroup, computeStack.glueExecutionRole, recreateS3Buckets, region, props);
 //new DeveloperStack(app, MetaData.PREFIX+"developer-stack", networkStack.Vpc, props);
+
+
+
