@@ -7,3 +7,4 @@ drivers
 html/*/*.zip
 *layer*.zip
 **/trade-import/lib*
+__pycache__
