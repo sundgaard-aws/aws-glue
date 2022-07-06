@@ -22,27 +22,27 @@ export class ComputeStack extends Stack {
         var codePathRoot = "../../python/trade-import/";
         var logGroup = this.createGlueLogGroup(this.glueExecutionRole);
         var glueVPCConnection = this.createGlueVPCConn(vpc, glueVPCNetworkConnectionSecurityGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab1", codePathRoot+"lab1.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab2", codePathRoot+"lab2.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab3", codePathRoot+"lab3.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab4", codePathRoot+"lab4.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab5", codePathRoot+"lab5.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab6", codePathRoot+"lab6.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab7", codePathRoot+"lab7.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab8", codePathRoot+"lab8.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab9", codePathRoot+"lab9.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab10", codePathRoot+"lab10.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab11", codePathRoot+"lab11.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab12", codePathRoot+"lab12.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab13", codePathRoot+"lab13.py", logGroup);
-
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab29", codePathRoot+"lab29.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab30", codePathRoot+"lab30.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab31", codePathRoot+"lab31.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab37", codePathRoot+"lab37.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab39", codePathRoot+"lab39.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab40", codePathRoot+"lab40.py", logGroup);
-        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab41", codePathRoot+"lab41.py", logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab1", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab2", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab3", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab4", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab5", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab6", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab7", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab8", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab9", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab10", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab11", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab12", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab13", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab29", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab30", codePathRoot, logGroup, 4);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab31", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab32", codePathRoot, logGroup, 4);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab37", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab39", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab40", codePathRoot, logGroup);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab41", codePathRoot, logGroup);
         /*this.createSimpleETLJob(this.glueExecutionRole, "lab8", codePathRoot+"lab8.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab9", codePathRoot+"lab9.py");
         this.createSimpleETLJob(this.glueExecutionRole, "lab10", codePathRoot+"lab10.py");*/
@@ -69,15 +69,15 @@ export class ComputeStack extends Stack {
         return logGroup;
     }
 
-    private createSimpleETLJob(glueExecutionRole:IRole, glueVPCConnection:IConnection, jobPostFix:string, codePath:string, logGroup:ILogGroup): IJob {
+    private createSimpleETLJob(glueExecutionRole:IRole, glueVPCConnection:IConnection, jobPostFix:string, codePathRoot:string, logGroup:ILogGroup, workerCount:number=2): IJob {
         var job = new Job(this, MetaData.PREFIX+jobPostFix, {
             jobName: MetaData.PREFIX+jobPostFix,            
             executable: JobExecutable.pythonEtl({
                 glueVersion: GlueVersion.V3_0,
                 pythonVersion: PythonVersion.THREE,                
-                script: Code.fromAsset(codePath)
+                script: Code.fromAsset(codePathRoot+jobPostFix+".py")
             }),
-            workerCount:2,
+            workerCount:workerCount,
             maxRetries:0,
             maxConcurrentRuns:1,            
             workerType: WorkerType.G_1X,
