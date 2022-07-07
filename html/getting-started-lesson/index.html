@@ -125,14 +125,9 @@
 
 <p>To ensure that we are using the right IAM Role and credentials we will disable the managed credentials settings in Cloud9. Click the cogwheel in the top right corner. Navigate to 'AWS Settings' and click the 'AWS managed temporary credentials' to disable it. It should be showing as red, with a white cross as per the screenshot below.</p>
 <img src="images/Slide35a.PNG">
-<p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Navigate back to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a> and copy your AWS credentials. Go back to Cloud9 and paste them in the terminal as per the code below.</p>
+<p>You can now close the 'Preferences' tab. Next drag the bottom divider to make the lower terminal screen section a bit heigher. Navigate back to the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a> and copy your AWS credentials. Go back to Cloud9 and paste them in the terminal. You will find your credentials as per the screenshot below.
 
-<div class="code">
-    export AWS_DEFAULT_REGION=eu-west-1<br>
-    export AWS_ACCESS_KEY='your-key'<br>
-    export AWS_SECRET_ACCESS='your-secret'<br>
-    export AWS_SESSION_TOKEN='your-token'<br>
-</div>    
+<img src="images/event-engine-cred.png" alt=""/>
 
 <p>Finally, run the command below and verify that the output shows that you are using a role that contains the text 'TeamRole'.</p>
 

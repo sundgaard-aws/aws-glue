@@ -39,6 +39,7 @@ export class ComputeStack extends Stack {
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab30", codePathRoot, logGroup, 4);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab31", codePathRoot, logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab32", codePathRoot, logGroup, 4);
+        this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab35", codePathRoot, logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab37", codePathRoot, logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab39", codePathRoot, logGroup);
         this.createSimpleETLJob(this.glueExecutionRole, glueVPCConnection, "lab40", codePathRoot, logGroup);

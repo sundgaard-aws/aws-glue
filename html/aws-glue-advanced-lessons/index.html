@@ -144,24 +144,60 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 
 <h1>Lab 35 - Using include libraries</h1>
 <p>
-    The more ETL jobs you write, the more code and functionality you will find yourself repeating across jobs. To avoid situations where code maintenance becomes a burden, it is often helpful to generalize your code and wrap it as a reusable function.<br/>
-    Functions can be placed in modules (for Python), which can be either zip archive files or simply .py files. You can maintain and store these files as with any other code in your code repository of choice. As part of your CI/CD deployments you can make these modules available on S3, and include them in any of your AWS Glue jobs.<br/>
-    In this exercise we will be moving some of the general functions that we have created in previous exercises to a separate Python module. We will then upload the module to S3 and include them in a job.<br/>
-</p>    
+    The more ETL jobs you write, the more code and functionality you will find yourself repeating across jobs. To avoid situations where code maintenance becomes a burden, it is often helpful to generalize your code and wrap it as a reusable function.<br/><br/>
+    Functions can be placed in modules (for Python), which can be either zip archive files or simply .py files. You can maintain and store these files as with any other code in your code repository of choice. As part of your CI/CD deployments you can make these modules available on S3, and include them in any of your AWS Glue jobs.<br/><br/>
+    In this exercise we will be moving some of the general functions that we have created in previous exercises to a separate Python module. We will then upload the module to S3 and include them in a job.<br/><br/>
+    Got to the "Script" tab of the job.<br/><br/>
+    Remove the section defining the two first functions as indicated by the dotted lines.<br/><br/>
+    While still on the "Script" tab add the following to lines as part of the top imports.<br/>
+    <div class="code">
+        from generic_glue_functions import getSecret<br/>
+        from generic_glue_functions import getParameter<br/>
+    </div>
+    <br/>
+    It should look like the image below.<br/>
+    <img src="images/lab35-5.png" alt="" />
+    <br/><br/>
+    Go to the "Job details" tab.<br/><br/>
+    Scroll down to the "Advanced" section and expand it. Scroll down to the "Python library path" field.<br/><br/>
+    Open the S3 Console in another tab.<br/><br/>
+    Download the <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">Python module</a> to your local computer (right click the link and choose save link as).<br/><br/>
+    Go to the "acc-day-glue-input-*" bucket.<br/><br/>
+    Create a new folder called "libs".<br/><br/>
+    <img src="images/lab35-1.png" alt="" />
+    Upload the file "generic_glue_functions.py" to the "acc-day-glue-input-*" bucket in the "/libs/" folder by dragging in the file from your local download folder.<br/><br/>
+    <img src="images/lab35-2.png" alt="" />
+    Click the link of the newly uploaded file object and copy the full S3 path from the S3 Console.<br/><br/>
+    <img src="images/lab35-3.png" alt="" />
+    Paste the full S3 path to the S3 python module that you uploaded previously, and save the job.<br/><br/>
+    <img src="images/lab35-4.png" alt="" />
+    Run the job.<br/><br/>
+    Verify that the job succeeded.<br/><br/>
+</p>
+<p>
+    Now you know how you can easily make reusable functions with AWS Glue.
+</p>
 
 <h1>Lab 36 - Using AWS Glue - Interactive Sessions (embedded Jupyter notebooks) - NEW!</h1>
 <p>
-    Create a new AWS Glue job and select the "notebook" option.<br/>
-    Wait for the "notebook" to start.<br/>
+    Create a new AWS Glue job by selecting the "Notebook" option at the jobs creation page.<br/><br/>
+    <img src="images/lab36-1.png" alt="" />
+    Name it "acc-day-glue-lab36".<br/><br/>
+    <img src="images/lab36-2.png" alt="" />
+    Wait for the notebook to finish start up.<br/><br/>
+    <img src="images/lab36-3.png" alt="" />
+    Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.<br/><br/>
+    <img src="images/lab36-4.png" alt="" />
+    We are actually reading from a file from a previous lab and printing that. At this point you can change the input file or start manipuliting data just by adding your logic in new cells (or the same for that matter), and running them. We will be working more with Notebook based jobs in some of the remaining exercises, but feel free to work with and transform, clean and manipulate data further using this notebook before you continue.
 </p>    
 
 <h1>Lab 37 - Aggregate amounts by trader using UI</h1>
 <p>
     Create a new blank job<br/>
-    Read from the AWS Glue “s3-large” table that we created by crawling an s3 bucket earlier<br/>
-    Choose the “aggregate” function under the “Transform” menu<br/>
-    Choose “trader_id“ as the group by<br/>
-    Choose “trade_amount” as sum<br/>
+    Read from the AWS Glue “s3-large" table that we created by crawling an s3 bucket earlier<br/>
+    Choose the "aggregate” function under the “Transform” menu<br/>
+    Choose "trader_id" as the group by<br/>
+    Choose "trade_amount" as sum<br/>
     Run the job.<br/>
     Verify that the run is successful.<br/>
     At this time you are not able to view the final output, we will improve that in the coming two labs.<br/>
