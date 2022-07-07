@@ -46,9 +46,9 @@ If not already done, start by logging in to <a href="https://eu-west-1.console.a
 
 <p>If the 'Role' contains the phrase 'TeamRole' then you are using the right credentials. You can continue using by running the code below, otherwise go back to the <a href="https://www.eventbox.dev/staging/lesson/event-engine-getting-started/index.html" target="_blank">Getting Started Guide</a>.</p>
 <div class="code">
-aws s3 ls | grep input<br/>
-echo please type &quot;trade-input-bucket-name&quot;<br/>
-read tradeInputBucket<br/>
+aws s3 ls | grep glue-input-<br/>
+export tradeInputBucket=[paste-bucket-name-from-above]<br/>
+echo $tradeInputBucket<br/>
 cd ~/environment/git/aws-glue/python/trade-import<br/>
 python generate-large-data-file.py<br/>
 python generate-huge-data-file.py<br/>
@@ -58,8 +58,8 @@ aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades.csv s3://$trade
 aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-large.csv s3://$tradeInputBucket/<br/>
 aws s3 cp ~/environment/git/aws-glue/sample-data/trade/fx-trades-huge.csv s3://$tradeInputBucket/<br/>
 aws s3 ls | grep driver<br/>
-echo please type &quot;driver-bucket-name&quot;<br/>
-read driverBucket<br/>
+export driverBucket=[paste-bucket-name-from-above]<br/>
+echo $driverBucket<br/>
 echo downloading mysql jdbc driver...<br/>
 cd /tmp/<br/>
 wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar<br/>
@@ -175,7 +175,9 @@ So far we have been reading data from Amazon S3, and we have trimmed/prepared an
 Once the job has completed, connect to the MySQL database instance, using the MySQL CLI from <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a>. Please ensure that you have configured the <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">RDS security group</a> to allow inbound connections from Cloud9 for the MySQL port.
 </p>
 
-<p>Once the job has completed, connect to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
+<p>
+    Once the job has completed, connect to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL. If you forget this, your connection attempt will time out. Run the code below to connect to the database.<br/><br/>
+    Remember to replace the values with the right information for your database instance. You can find these using <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
 </p>
 
 <div class="code">
@@ -242,6 +244,11 @@ Write data to DynamoDB instead of MySQL
     aws glue start-job-run --job-name acc-day-glue-lab10<br/>
     aws glue get-job-runs --job-name acc-day-glue-lab10 --output table<br/>
 </div>
+<p>
+    Verify that the trades has been written successfully to Amazon DynamoDB. Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/cloudwatch/" target="_blank">DynamoDB Console</a>, and click "Explore Items".
+</p>
+<img src="images/lab10-1.png">
+<img src="images/lab10-2.png">
 
 <h1>Lab 11 - Write large data sets to Amazon Dynamodb</h1>
 <p>
@@ -356,10 +363,14 @@ create table counterparty (<br/>
 <h1>Lab 17 - Create a job using the UI</h1>
 <p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'cpty' to the target table 'counterparty'. The two tables were already created in the previous exercise.<p>
 
-<p>As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'. Otherwise see if you can figure out how to create the job yourself using the UI. Remember to name your job 'acc-day-glue-lab17'. You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
-
 <p>
-    Run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
+    In this exercise it is time to test some of the things you have learned so far. See if you can figure out how to create the job yourself using the UI.<br/><br/>
+    Create a new Glue visual job using the wizard. Name your job 'acc-day-glue-lab17'.<br/><br/>
+    As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'. While on the settings tab also ensure that the number of workers are set to 2, timeout to 20 minutes, and retry attempts to 0. Scroll down to the advanced section and ensure that you add the "acc-day-glue-vpc-conn" as a connection. Without this your connection to the database will time out. Finally specify the role for the job being the "acc-day-glue-execution-role".<br/><br/>
+    You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. This means that you can choose them from the Glue database and table drop downs instead of specifying all the details again.<br/><br/>
+    Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
+<p>
+    When you are done configuring the job, save it and run the job using the <a href="https://eu-west-1.console.aws.amazon.com/glue/" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
 </p>
 
 <div class="code">
