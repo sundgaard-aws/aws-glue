@@ -18,14 +18,46 @@
 
 <h1>Advanced lessons with AWS Glue</h1>
 <p>
-Before beginning these lessons, please ensure that all AWS Glue intro lessons has been completed, or that you have a solid understanding of AWS Glue at this point.
+Before beginning these lessons, please ensure that all AWS Glue intro lessons has been completed, or that you have a solid understanding of AWS Glue at this point. Also we will need to install a few new labs at this point. Navigate to Cloud9, and paste your credentials in the terminal from Event Engine, just like you did on Day 1. Run the command below after that.
+</p>
+
+<div class="code">
+    cdk deploy *
+</div>
+<p>
+    Wait for the command to complete and then continue to the next lab.
+</p>
+
+<h1>Lab 28 - Create crawler for large trade file</h1>
+<p>
+    In this exercise we will be creating a crawler for one of the files that we have been using for various labs so far.<br/>
+    Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/glue/home?region=eu-west-1#catalog:tab=crawlers">Glue Crawlers</a> page and click the blue "Add crawler" button.<br/>
+    <p>Name your crawler "acc-day-glue-s3-trade-large-crawler" and click next.</p>
+    <img src="images/lab28-9.png" class="mediumImages" alt="" />
+    <p>Leave all as default.</p>
+    <img src="images/lab28-7.png" class="mediumImages" alt="" />
+    <p>Navigate to the "fx-trade-large-csv" file in the input bucket by using the browse icon on the right.</p>
+    <img src="images/lab28-3.png" class="mediumImages" alt="" />
+    <p>Choose the IAM role.</p>
+    <img src="images/lab28-4.png" class="mediumImages" alt="" />
+    <p>Choose "Run on demand".</p>
+    <img src="images/lab28-5.png" class="mediumImages" alt="" />
+    <p>Choose the existing Glue Database "acc-day-glue-database" that you created in a previous lab.</p>
+    <img src="images/lab28-2.png" class="mediumImages" alt="" />
+    <p>If you didn't complete the previous lab simply click "Add database" and give it that name.</p>
+    <img src="images/lab28-1.png" class="mediumImages" alt="" />
+    <p>Verify the details.</p>
+    <img src="images/lab28-6.png" class="mediumImages" alt="" />
+    <p>Finally run the crawler.</p>
+    <img src="images/lab28-8.png" class="mediumImages" alt="" />
+    <p>If you like you can navigate to databases at this point and view the table meta data that was collected.</p>
 </p>
 
 <h1>Lab 29 - Write partitioning with Amazon S3 (s3=>s3 - no parition key)</h1>
-<p>
-    In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.<br/>
-    We will not be specifying a partition key in this lab, but AWS Glue are paritioning even though.<br/>
-    Note how data is structured in separate partitions (multiple files) in the target folder.<br/>
+<p>In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.</p>
+<p>We will not be specifying a partition key in this lab, but AWS Glue are partitioning even though.</p>
+<p>Run the job and wait for it to complete.</p>
+<p>Note how data is structured in separate partitions (multiple files) in the target folder.</p>
     Open one or more of the files to verify the contents.<br/>
 </p>
 
@@ -62,44 +94,35 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 
 <h1>Lab 33 - Create Aurora PostgreSQL DB and Crawler</h1>
 <p>    
-    * So far we have only been using S3, MySQL and DynamoDB. We will now add a PostgreSQL compatible database using Amazon Aurora Serverless.<br/>
-    * Using the Cloud9 IDE Open the file at "iac/lib/data-stack.ts".<br/>
-    * Uncomment the line with the text "this.createRDSAuroraPostgreSqlDB" by removing the two slashes.<br/>
-    * Run the command below to deploy PostgreSQL database:<br/>
+    So far we have only been using S3, MySQL and DynamoDB. We will now add a PostgreSQL compatible database using Amazon Aurora Serverless.<br/>    
+    Install the "psql" command line tool, by adjusting the replaceable sections and running the following commands in a Cloud9 terminal session:<br/>
     <div class="code">
-        npx cdk deploy *<br/>
-    </div>
-    * Wait for the deployment to finalize.<br/>
-    * Install psql by adjusting the replaceable sections and running the following commands in a Cloud9 terminal session:<br/>
-    <div class="code">
-        # start cloud shell<br/>
         sudo yum install -y postgresql-libs.x86_64 postgresql.x86_64<br/>        
     </div>
-    * Connect to the database in Cloud9 by running the command below:<br/>
-    <div class="code">
-        aws secretsmanager get-secret-value --region eu-west-1 --secret-id [replace-with-your-secret-id]<br/>
+    Connect to the database in Cloud9 by running the command below:<br/>
+    <div class="code">        
         psql --host acc-day-glue-tm-aurora-cluster.cluster-[replace].eu-west-1.rds.amazonaws.com --user postgres<br/>
     </div>
-    * When prompted for the pw, navigate to Secrets Manager and find the secret for the new Aurora DB.<br/>
-    * Paste the pw in the psql prompt<br/>
-    * Once connected to the database prompt, switch to the proper DB<br/>
+    When prompted for the pw, navigate to Secrets Manager and find the secret for the new Aurora DB.<br/>
+    Paste the pw in the psql prompt<br/>
+    Once connected to the database prompt, switch to the proper DB<br/>
     <div class="code">
         \connect tm_aurora_db<br/>
     </div>
-    * Next create a trade table by running the commands in the file "create-trade-table-psql.sql".<br/>
-    * Next navigate to crawlers<br/>
-    * Create a new Glue connection using JDBC <br/>
-        * Name it “aurora-glue-conn”<br/>
-        * Use the following string for the JDBC part and replace where needed (such as [replace-with-your-settings]):<br/>
+    Next create a trade table by running the commands in <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/sql/create-table-trade-psql.sql">this file</a>.<br/>
+    Next navigate to "Glue Connections".<br/>
+    Create a new Glue connection using JDBC.<br/>
+    Name it "aurora-glue-conn"<br/>
+    Use the following string for the JDBC part and replace where needed (such as [replace-with-your-settings]):<br/>
     <div class="code">
         jdbc:postgresql://acc-day-glue-tm-aurora-cluster.cluster-[replace-with-your-settings].eu-west-1.rds.amazonaws.com:5432/tm_aurora_db<br/>
     </div>
-    * Create a new Glue crawler<br/>
-        * Specify crawler name “aurora-crawler”<br/>
-        * Create a Glue database and name it “all-dbs”<br/>
-        * Specify the connection “aurora-glue-conn” in the connection drop down<br/>
-    * Complete the wizard with default settings and finally choose to run the crawler.<br/>
-    * Wait for crawler to complete, and verify that it has found the "trade" table.<br/>
+    Create a new Glue crawler<br/>
+    Specify crawler name "aurora-crawler"<br/>
+    Create a Glue database and name it “all-dbs”<br/>
+    Specify the connection "aurora-glue-conn" in the connection drop down<br/>
+    Complete the wizard with default settings and finally choose to run the crawler.<br/>
+    Wait for crawler to complete, and verify that it has found the "trade" table.<br/>
 </p>
 
 <h1>Lab 34 - Custom transforms (using Glue UI)</h1>
@@ -107,36 +130,36 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     AWS Glue has both UI and scripting capabilities. In some cases you may want to use the UI to get started quickly and to get an idea of how your script could look like. When using the UI, even though many functions are available out of the box, you <br/>may find yourself missing some functionality.<br/>
     For this reason you can use "custom transforms" in AWS Glue. This will allow you to write custom transformation snippets while still maintaining the UI state of a job.<br/>
     <p>Create a new UI Glue Job</p>
-    <img src="images/lab34-1.png" />
+    <img src="images/lab34-1.png" class="mediumImages" alt=""/>
     <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-2.png" />
+    <img src="images/lab34-2.png" class="mediumImages" alt=""/>
     <p>Choose the file "fx-trades-large.csv" from the trade input bucket.</p>
-    <img src="images/lab34-3.png" />
+    <img src="images/lab34-3.png" class="mediumImages" alt=""/>
     <p>Change all types in the output schema to "string"</p>
-    <img src="images/lab34-4.png" />
+    <img src="images/lab34-4.png" class="mediumImages" alt=""/>
     <p>Add a custom transformation from the "Transform" drop down.</p>
-    <img src="images/lab34-5.png" />
+    <img src="images/lab34-5.png" class="mediumImages" alt=""/>
     <p>Also add a "Select From Collection" element, and adjust the canvas to look like the one below.</p>
-    <img src="images/lab34-6.png" />
+    <img src="images/lab34-6.png" class="tallImage" alt=""/>
     <p>Click the custom transform element and paste the code from the file "custom-transform.py" just below the function definition (exclude the function definition from the file) and click "Apply".</p>
-    <img src="images/lab34-7.png" />
-    <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-8.png" />
-    <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-9.png" />
-    <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-10.png" />
-    <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-11.png" />
-    <p>Name it "acc-day-glue-lab-34".</p>
-    <img src="images/lab34-12.png" />    
+    <img src="images/lab34-7.png" class="mediumImages" alt=""/>
+    <p>Ensure that the output schema for the "Custom" transform looks like below.</p>
+    <img src="images/lab34-8.png" class="mediumImages" alt=""/>
+    <p>Ensure that the output schema for the "Apply mapping" transform looks like below.</p>
+    <img src="images/lab34-9.png" class="mediumImages" alt=""/>
+    <p>Your UI job should look like the one below.</p>
+    <img src="images/lab34-10.png" class="mediumImages" alt=""/>
+    <p>Adjust settings as per screenshot below.</p>
+    <img src="images/lab34-11.png" class="mediumImages" alt=""/>
+    <p>Make sure that you have both connections included.</p>
+    <img src="images/lab34-12.png" class="mediumImages" alt=""/>    
     <p>Connect to psql prompt in Cloud9 just as you did in "lab 33" and run the code lines below and verify that the "trade" table is empty.</p>
-    <img src="images/lab34-14.png" />
+    <img src="images/lab34-14.png" class="mediumImages" alt=""/>
     <div class="code">
         select count(1) from trade;
     </div>
     <p>Run the job and wait for completion. When completed run the sql statement again to verify that all rows has been inserted.</p>
-    <img src="images/lab34-13.png" />
+    <img src="images/lab34-13.png" class="mediumImages" alt=""/>
     <div class="code">
         select count(1) from trade;
     </div>
@@ -156,7 +179,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     </div>
     <br/>
     It should look like the image below.<br/>
-    <img src="images/lab35-5.png" alt="" />
+    <img src="images/lab35-5.png" class="mediumImages" alt="" />
     <br/><br/>
     Go to the "Job details" tab.<br/><br/>
     Scroll down to the "Advanced" section and expand it. Scroll down to the "Python library path" field.<br/><br/>
@@ -164,15 +187,15 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     Download the <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">Python module</a> to your local computer (right click the link and choose save link as).<br/><br/>
     Go to the "acc-day-glue-input-*" bucket.<br/><br/>
     Create a new folder called "libs".<br/><br/>
-    <img src="images/lab35-1.png" alt="" />
-    Upload the file "generic_glue_functions.py" to the "acc-day-glue-input-*" bucket in the "/libs/" folder by dragging in the file from your local download folder.<br/><br/>
-    <img src="images/lab35-2.png" alt="" />
-    Click the link of the newly uploaded file object and copy the full S3 path from the S3 Console.<br/><br/>
-    <img src="images/lab35-3.png" alt="" />
-    Paste the full S3 path to the S3 python module that you uploaded previously, and save the job.<br/><br/>
-    <img src="images/lab35-4.png" alt="" />
-    Run the job.<br/><br/>
-    Verify that the job succeeded.<br/><br/>
+    <img src="images/lab35-1.png" class="mediumImages" alt="" />
+    <p>Upload the file "generic_glue_functions.py" to the "acc-day-glue-input-*" bucket in the "/libs/" folder by dragging in the file from your local download folder.</p>
+    <img src="images/lab35-2.png" class="mediumImages" alt="" />
+    <p>Click the link of the newly uploaded file object and copy the full S3 path from the S3 Console.</p>
+    <img src="images/lab35-3.png" class="mediumImages" alt="" />
+    <p>Paste the full S3 path to the S3 python module that you uploaded previously, and save the job.</p>
+    <img src="images/lab35-4.png" class="mediumImages" alt="" />
+    <p>Run the job.</p>
+    <p>Verify that the job succeeded.</p>
 </p>
 <p>
     Now you know how you can easily make reusable functions with AWS Glue.
@@ -181,21 +204,21 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <h1>Lab 36 - Using AWS Glue - Interactive Sessions (embedded Jupyter notebooks) - NEW!</h1>
 <p>
     Create a new AWS Glue job by selecting the "Notebook" option at the jobs creation page.<br/><br/>
-    <img src="images/lab36-1.png" alt="" />
+    <img src="images/lab36-1.png" class="mediumImages" alt="" />
     Name it "acc-day-glue-lab36".<br/><br/>
-    <img src="images/lab36-2.png" alt="" />
+    <img src="images/lab36-2.png" class="mediumImages" alt="" />
     Wait for the notebook to finish start up.<br/><br/>
-    <img src="images/lab36-3.png" alt="" />
-    Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.<br/><br/>
-    <img src="images/lab36-4.png" alt="" />
+    <img src="images/lab36-3.png" class="mediumImages" alt="" />
+    Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/python/trade-import/lab36-notebook.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.<br/><br/>
+    <img src="images/lab36-4.png" class="mediumImages" alt="" />
     We are actually reading from a file from a previous lab and printing that. At this point you can change the input file or start manipuliting data just by adding your logic in new cells (or the same for that matter), and running them. We will be working more with Notebook based jobs in some of the remaining exercises, but feel free to work with and transform, clean and manipulate data further using this notebook before you continue.
 </p>    
 
 <h1>Lab 37 - Aggregate amounts by trader using UI</h1>
 <p>
     Create a new blank job<br/>
-    Read from the AWS Glue “s3-large" table that we created by crawling an s3 bucket earlier<br/>
-    Choose the "aggregate” function under the “Transform” menu<br/>
+    Read from the AWS Glue "s3_trade_large" table that we created by crawling an s3 bucket earlier in lab 28.<br/>
+    Choose the "aggregate” function under the "Transform" menu<br/>
     Choose "trader_id" as the group by<br/>
     Choose "trade_amount" as sum<br/>
     Run the job.<br/>
@@ -212,14 +235,17 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 
 <h1>Lab 39 - Create aggregation reports</h1>
 <p>
-    * Clone the job from Lab 37, rename it to create-aggregation-reports. Choose “edit script“. <br/>
-    * Aggregate amounts by “trader_id” in one stream, and by “currency” (ccy) in another stream. <br/>
-    * Write the resulting data frames to two individual CSV files in the S3 “xxx-trade/reports/” bucket. <br/>
-    * Name them “aggregated-amounts-by-trader“  and “aggregated-amounts-by-ccy“.<br/>
-    * After job completion download and open the files using Excel.<br/>
-    * Convert the two columns from text to columns and specify comma as the separator<br/>
-    * Add filtering.<br/>
-    * Analyze the data to verify that it looks as you would expect based on the input.<br/>
+    Clone the job from Lab 37, rename it to "acc-day-glue-lab39", you can do this by clicking a job and choosing "Clone Job". <br/>
+    Aggregate amounts by "trader_id" in one stream, and by "currency" (ccy) in another stream. <br/>
+    Write the resulting data frames to two individual CSV files in the S3 "acc-day-glue-input-trade-*/reports/" bucket. <br/>
+    Name them "aggregated-amounts-by-trader" and "aggregated-amounts-by-ccy".<br/>
+    After job completion download and open the files using Excel.<br/>
+    Convert the two columns from text to columns and specify comma as the separator<br/>
+    Add filtering.<br/>
+    Analyze the data to verify that it looks as you would expect based on the input.<br/>
+</p>
+<p>
+    You have just managed to do data aggregation with Glue and represented that as a report in Excel.
 </p>    
 
 <h1>Lab 40 - Generate PII</h1>
