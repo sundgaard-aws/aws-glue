@@ -205,58 +205,53 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>
     Create a new AWS Glue job by selecting the "Notebook" option at the jobs creation page.<br/><br/>
     <img src="images/lab36-1.png" class="mediumImages" alt="" />
-    Name it "acc-day-glue-lab36".<br/><br/>
+    <p>Name it "acc-day-glue-lab36".</p>
     <img src="images/lab36-2.png" class="mediumImages" alt="" />
-    Wait for the notebook to finish start up.<br/><br/>
+    <p>Wait for the notebook to finish start up.</p>
     <img src="images/lab36-3.png" class="mediumImages" alt="" />
-    Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/python/trade-import/lab36-notebook.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.<br/><br/>
+    <p>Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/python/trade-import/lab36-notebook.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.</p>
     <img src="images/lab36-4.png" class="mediumImages" alt="" />
-    We are actually reading from a file from a previous lab and printing that. At this point you can change the input file or start manipuliting data just by adding your logic in new cells (or the same for that matter), and running them. We will be working more with Notebook based jobs in some of the remaining exercises, but feel free to work with and transform, clean and manipulate data further using this notebook before you continue.
+    <p>We are actually reading from a file from a previous lab and printing that. At this point you can change the input file or start manipuliting data just by adding your logic in new cells (or the same for that matter), and running them. We will be working more with Notebook based jobs in some of the remaining exercises, but feel free to work with and transform, clean and manipulate data further using this notebook before you continue.</p>
 </p>    
 
 <h1>Lab 37 - Aggregate amounts by trader using UI</h1>
-<p>
-    Create a new blank job<br/>
-    Read from the AWS Glue "s3_trade_large" table that we created by crawling an s3 bucket earlier in lab 28.<br/>
-    Choose the "aggregate” function under the "Transform" menu<br/>
-    Choose "trader_id" as the group by<br/>
-    Choose "trade_amount" as sum<br/>
-    Run the job.<br/>
-    Verify that the run is successful.<br/>
-    At this time you are not able to view the final output, we will improve that in the coming two labs.<br/>
-</p>
+<p>Create a new blank job and name it "acc-day-glue-lab37-ui" and configure the s3 source to read from the table "s3_trade_large" which we created by crawling an s3 bucket in lab 28. Note that there is already a pre-created job named "acc-day-glue-lab37" and this is why we need to add the "-ui" ending. You can use this job as a fallback or reference, if you run out of time.</p>
+<img src="images/lab37-1.png" class="mediumImages" alt="" />
+<p>Add an "Aggregate" transform function from the "Transform" menu drop down, and configure "trader_id" as the group by expression. Also add an "Aggregate column" by clicking the corresponding button and select "amount" as the aggregate field and sum as the aggregate function.</p>
+<img src="images/lab37-2.png" class="mediumImages" alt="" />
+<p>Remove all other boxes from the canvas. The result should look like the screenshot below.</p>
+<img src="images/lab37-3.png" class="mediumImages" alt="" />
+<p>Adjust the "Job details" tab as per screenshot below.</p>
+<img src="images/lab37-4.png" class="mediumImages" alt="" />
+<p>Save and run the job and verify that the run was successful.</p>
+<p>At this time you are not able to view the final output, we will improve that in the coming two labs.</p>
+
 
 <h1>Lab 38 - Aggregate amounts by trader using notebook</h1>
-<p>
-    Create a new notebook job and copy the various parts of the script from the previous lab to individual cells in the notebook. <br/>
-    Run them step by step and note the individual timings. <br/>
-    Try to change the grouping and sum columns to get a feel for what is possible and the related timings.<br/>
-</p>
+<p>Create a new notebook job and copy the various parts of the script (from the "Script" tab) from the previous lab to individual cells in the notebook.<p>
+<p>Run them step by step and note the individual timings.</p>
+<p>Try to change the grouping and sum columns to get a feel for what is possible and the related timings.</p>
 
 <h1>Lab 39 - Create aggregation reports</h1>
+<p>Clone the job from Lab 37, rename it to "acc-day-glue-lab39-ui", you can do this by clicking a job and choosing "Clone Job". Just as before note the "-ui" ending. You have a fallback again should you run out of time. This job is name "acc-day-glue-lab39-ui". You can also use this job for reference, even though it is a non UI job.</p>
+<p>We already aggregated "amount" by "trader_id" in one stream, but in this job we will enhance it by aggregating "amount" by "currency" (ccy) in another stream.</p>
+<p>Write the results two individual CSV files in the S3 "acc-day-glue-trade-*/reports/" bucket.</p>
+<p>Name them "aggregated-amounts-by-trader" and "aggregated-amounts-by-ccy".</p>
+<p>After job completion download the files from the S3 console, and open them using Excel. Note that the files will not have the .csv ending at this time. This is due to the paralleization done by AWS Glue and Apache Spark.</p>
+<p>Once the file has been opened in Excel, convert the two columns from text to columns and specify comma as the separator.</p>
+<p>Add some filtering and a bit of basic styling.</p>
+<p>Analyze the data to verify that it looks as you would expect based on the input.</p>
 <p>
-    Clone the job from Lab 37, rename it to "acc-day-glue-lab39", you can do this by clicking a job and choosing "Clone Job". <br/>
-    Aggregate amounts by "trader_id" in one stream, and by "currency" (ccy) in another stream. <br/>
-    Write the resulting data frames to two individual CSV files in the S3 "acc-day-glue-input-trade-*/reports/" bucket. <br/>
-    Name them "aggregated-amounts-by-trader" and "aggregated-amounts-by-ccy".<br/>
-    After job completion download and open the files using Excel.<br/>
-    Convert the two columns from text to columns and specify comma as the separator<br/>
-    Add filtering.<br/>
-    Analyze the data to verify that it looks as you would expect based on the input.<br/>
-</p>
-<p>
-    You have just managed to do data aggregation with Glue and represented that as a report in Excel.
+    You have just managed to do data aggregation with the Glue UI and represented that as a report in Excel.
 </p>    
 
 <h1>Lab 40 - Generate PII</h1>
-<p>
-    In this exercise we will be generating PII data. We are simulating a common situation for GDPR, where deletion of information is requested by an individual. We will be generating 1M rows containing synthetic bank accounts information and Danish CPR numbers, which qualifies as PII and GDPR data.<br/>
-    Run the job "Lab 40"<br/>
-    Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.<br/>
-    Verify that the file "synthetic-pii.csv" has been generated in the "trade" bucket.<br/>
-    Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count<br/>
-    Verify that it contains exactly 1M rows if you deduct headers and empty lines at the end<br/>
-</p>
+<p>In this exercise we will be generating PII data. We are simulating a common situation for GDPR, where deletion of information is requested by an individual. We will be generating 1M rows containing synthetic bank accounts information and Danish CPR numbers, which qualifies as PII and GDPR data.</p>
+<p>Run the job "Lab 40".</p>
+<p>Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.</p>
+<p>Verify that the file "synthetic-pii.csv" has been generated in the "trade" bucket.</p>
+<p>Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
+<p>Verify that it contains exactly 1M rows if you deduct headers and empty lines at the end.</p>
 
 <h1>Lab 41 - Cleanup PII</h1>
 <p>
@@ -271,9 +266,10 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <h1>Lab 42 - Create table for performance metrics</h1>
 <p>
     Performance and metrics are an important part of understanding your ETL jobs. AWS Glue shows a number of metrics related to runtime, status, CPU, memory and more. Compute nodes backing AWS Glue will only run when used to reduce costs. This means that for short running jobs (a few minutes or seconds), the warm up time has a big impact on the total time spent. In order to better understand what takes time, we can easily add more metrics to CloudWatch or any place that we desire to log such metrics.<br/>
-    In the following labs we will be gathering such metrics for some of the jobs that we previously created.<br/>
-    Let us start by creating a table for holding the metrics in the postresql database.<br/>
-    Login to psql as previously and create a table as per the code below.<br/>
+    In the following labs we will be gathering such metrics for some of the jobs that we previously created.<br/>    
+</p>
+<p>Let us start by creating a table for holding the metrics in the postresql database.</p>
+<p>Login to psql as in the previous labs, and create a table as per the code below.</p>
     <div class="code">
         create table perf_metrics (
         entry_id int PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -285,15 +281,13 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 </p>
 
 <h1>Lab 43 - Collect performance metrics</h1>
-<p>
-    We now have our table in place, and it is time to collect some metrics from jobs run in previous labs.<br/>
-    Pick five or more jobs that you found pariculary interesting.<br/>
-    In the script part of those jobs add a call to startStopwatch() and stopStopwatch() where you find it appropriate. As a rule of thumb you would like to surround the time consuming blocks of code. If you are unsure, you can add the first call just after function definitions and the stop just before the job.commit statement.<br/>
-    <div class="code">
-        startStopwatch()<br/>
-        stopStopwatch()<br/>
-    </div>
-</p>
+<p>We now have our table in place, and it is time to collect some metrics from jobs run in previous labs.</p>
+<p>Pick five or more jobs that you found pariculary interesting.</p>
+<p>In the script part of those jobs add a call to startStopwatch() and stopStopwatch() where you find it appropriate. As a rule of thumb you would like to surround the time consuming blocks of code. If you are unsure, you can add the first call just after function definitions and the stop just before the job.commit statement.</p>
+<div class="code">
+    startStopwatch()<br/>
+    stopStopwatch()<br/>
+</div>
 
 
 <h1>Lab 50 - Performance comparison using notebook</h1>
