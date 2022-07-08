@@ -18,11 +18,17 @@
 
 <h1>Advanced lessons with AWS Glue</h1>
 <p>
-Before beginning these lessons, please ensure that all AWS Glue intro lessons has been completed, or that you have a solid understanding of AWS Glue at this point. Also we will need to install a few new labs at this point. Navigate to Cloud9, and paste your credentials in the terminal from Event Engine, just like you did on Day 1. Run the command below after that.
+Before beginning these lessons, please ensure that all AWS Glue intro lessons has been completed, or that you have a solid understanding of AWS Glue at this point. Also we will need to install a few new labs at this point. Navigate to <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a>, and paste your Event Engine credentials in the terminal. 
 </p>
-
+<p>You can find these from the <a href="https://dashboard.eventengine.run/dashboard" target="_blank">Event Engine Dashboard</a>, by clicking the "AWS Console" button, and then clicking the blue paper icon next to the text "Mac or Linux", that will copy the credentials to your clipboard. Paste these credentials in the terminal windows of <a href="https://eu-west-1.console.aws.amazon.com/cloud9" target="_blank">Cloud9</a> using SHIFT+ENTER. Don't forget to hit ENTER again on the last line.
+</p>
+<img src="images/aws-console-login.png" alt="" class="mediumImages" />
+<p>Next run the commands below after that.</p>
 <div class="code">
-    cdk deploy *
+    cd ~/environment/git/aws-glue<br/>
+    git pull<br/>
+    cd ~/environment/git/aws-glue/iac/cdk<br/>
+    cdk deploy *<br/>
 </div>
 <p>
     Wait for the command to complete and then continue to the next lab.
@@ -31,7 +37,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <h1>Lab 28 - Create crawler for large trade file</h1>
 <p>
     In this exercise we will be creating a crawler for one of the files that we have been using for various labs so far.<br/>
-    Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/glue/home?region=eu-west-1#catalog:tab=crawlers">Glue Crawlers</a> page and click the blue "Add crawler" button.<br/>
+    Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/glue/home?region=eu-west-1#catalog:tab=crawlers" target="_blank">Glue Crawlers</a> page and click the blue "Add crawler" button.<br/>
     <p>Name your crawler "acc-day-glue-s3-trade-large-crawler" and click next.</p>
     <img src="images/lab28-9.png" class="mediumImages" alt="" />
     <p>Leave all as default.</p>
@@ -57,7 +63,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.</p>
 <p>We have not specified a partition key in this lab, but AWS Glue are partitioning even though to optimize performance.</p>
 <p>Run the job and wait for it to complete.</p>
-<p>Notice how data is structured in separate partitions (multiple files) in the target <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#">S3</a> folder.</p>
+<p>Notice how data is structured in separate partitions (multiple files) in the target <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3</a> folder.</p>
     Download and open one or more of the files to verify the contents. You may have to rename the downloaded files in order to open them using your favorite editor.<br/>
 </p>
 
@@ -65,7 +71,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>In this exercise we will be creating partitions in an S3 target bucket. The source will again be a CSV file containing 20M rows of trade data.</p>
 <p>This time we have specified currency ("ccy") as the parition key on the target bucket.</p>
 <p>Run the job and check the status.</p>
-<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#">S3 console</a> and find the right bucket. You can see this from the "Script" tab of the Glue job you just ran.</p>
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 console</a> and find the right bucket. You can see this from the "Script" tab of the Glue job you just ran.</p>
 <p>Notice again how data is first divded in to multiple partitions, one per currency, and next it has multiple files per partition. Glue is doing this in order to parallelize work and optimize performance.</p>
 <p>Download and open one or more of the files to verify the contents. The files are CSV files, and you may have to rename them after downloading them in order to open them in your favorite editor.</p>
 
@@ -75,14 +81,14 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>The job is already created for you. Navigate to the "Script" tab of the job.</p>
 <p>Try to understand the details of the loop that is doing the merge and writing the consolidated files to s3.</p>
 <p>Run the job and verify the status.</p>
-<p>Go to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#">S3 console</a> and verify that there is a "merged.csv" file within each partition folder.</p>
+<p>Go to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 console</a> and verify that there is a "merged.csv" file within each partition folder.</p>
 <p>Download and open one or more of the merged files to verify that the contents are correct. This time no renaming is necessary as we merged the files and named it correctly.</p>
 
 <h1>Lab 32 - Nested write partitions with Amazon S3 (s3=>s3, huge by date and ccy)</h1>
 <p>In this exercise we will create nested partitions, meaning that data will first be partitioned by "trade_date" and next by "ccy".</p>
 <p>There are several reasons why you would want to use partitioning. It can be used to organize and parallelize data, but it is also useful to filter or read a specific partition to quickly narrow down the wanted data set.</p>
 <p>Run the job and check the status.</p>
-<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#">S3 console</a> and find the right bucket. You can find the bucket name from the by looking at the script.</p>
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 console</a> and find the right bucket. You can find the bucket name from the by looking at the script.</p>
 <p>Note how data is first divded in multiple partitions, first by "trade_date" and then by "ccy". It also has multiple files per sub partition.</p>
 <p>What we did in this exercise was to create another data dimension, and another level of nested paritions. You can quickly imagine that if you want to filter data by a parition consisting of "trade_date" or "trade_date" and "ccy", performance will be boosted significantly.</p>
 <p>Keep in mind though that the deeper partitions are nested, the fewer use cases generally exists for those data sets, but performance is boosted equivalently. That means that partitioning is a balancing act.</p>
@@ -165,7 +171,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     The more ETL jobs you write, the more code and functionality you will find yourself repeating across jobs. To avoid situations where code maintenance becomes a burden, it is often helpful to generalize your code and wrap it as a reusable function.<br/><br/>
     Functions can be placed in modules (for Python), which can be either zip archive files or simply .py files. You can maintain and store these files as with any other code in your code repository of choice. As part of your CI/CD deployments you can make these modules available on S3, and include them in any of your AWS Glue jobs.<br/><br/>
     In this exercise we will be moving some of the general functions that we have created in previous exercises to a separate Python module. We will then upload the module to S3 and include them in a job.<br/><br/>
-    Got to the "Script" tab of the job.<br/><br/>
+    Got to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Jobs Console</a>. Click the job for "lab35" and click the "Script" tab.<br/><br/>
     Remove the section defining the two first functions as indicated by the dotted lines.<br/><br/>
     While still on the "Script" tab add the following to lines as part of the top imports.<br/>
     <div class="code">
@@ -178,14 +184,14 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     <br/><br/>
     <p>Go to the "Job details" tab.</p>
     <p>Scroll down to the "Advanced" section and expand it. Scroll down to the "Python library path" field.</p>
-    <p>Open the S3 Console in another tab.</p>
+    <p>Open the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 Console</a> in another tab.</p>
     Download the <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">Python module</a> to your local computer (right click the link and choose save link as).<br/><br/>
     <p>Go to the "acc-day-glue-input-*" bucket.</p>
     <p>Create a new folder called "libs".</p>
     <img src="images/lab35-1.png" class="mediumImages" alt="" />
     <p>Upload the file "generic_glue_functions.py" to the "acc-day-glue-input-*" bucket in the "/libs/" folder by dragging in the file from your local download folder.</p>
     <img src="images/lab35-2.png" class="mediumImages" alt="" />
-    <p>Click the link of the newly uploaded file object and copy the full S3 path from the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#">S3 Console</a>.</p>
+    <p>Click the link of the newly uploaded file object and copy the full S3 path from the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 Console</a>.</p>
     <img src="images/lab35-3.png" class="mediumImages" alt="" />
     <p>Paste the full S3 path to the S3 python module that you uploaded previously, and save the job.</p>
     <img src="images/lab35-4.png" class="mediumImages" alt="" />
@@ -210,7 +216,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 </p>    
 
 <h1>Lab 37 - Aggregate amounts by trader using UI</h1>
-<p>Create a new blank job and name it "acc-day-glue-lab37-ui" and configure the s3 source to read from the table "s3_trade_large" which we created by crawling an s3 bucket in lab 28. Note that there is already a pre-created job named "acc-day-glue-lab37" and this is why we need to add the "-ui" ending. You can use this job as a fallback or reference, if you run out of time.</p>
+<p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Jobs Console</a> and create a new blank job and name it "acc-day-glue-lab37-ui" and configure the s3 source to read from the table "s3_trade_large" which we created by crawling an s3 bucket in lab 28. Note that there is already a pre-created job named "acc-day-glue-lab37" and this is why we need to add the "-ui" ending. You can use this job as a fallback or reference, if you run out of time.</p>
 <img src="images/lab37-1.png" class="mediumImages" alt="" />
 <p>Add an "Aggregate" transform function from the "Transform" menu drop down, and configure "trader_id" as the group by expression. Also add an "Aggregate column" by clicking the corresponding button and select "amount" as the aggregate field and sum as the aggregate function.</p>
 <img src="images/lab37-2.png" class="mediumImages" alt="" />
@@ -223,12 +229,13 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 
 
 <h1>Lab 38 - Aggregate amounts by trader using notebook</h1>
-<p>Create a new notebook job and copy the various parts of the script (from the "Script" tab) from the previous lab to individual cells in the notebook.<p>
+<p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Jobs Console</a> and clone the Notebook job that you created in "lab36". Wait for the notebook to provision.</p>
+<p>Copy the various parts of the script (from the "Script" tab) from the "lab37" to individual cells in the notebook. Note that you mean need to copy some imports from the start of the script and include these in the notebook cell as well.<p>
 <p>Run them step by step and note the individual timings.</p>
 <p>Try to change the grouping and sum columns to get a feel for what is possible and the related timings.</p>
 
 <h1>Lab 39 - Create aggregation reports</h1>
-<p>Clone the job from Lab 37, rename it to "acc-day-glue-lab39-ui", you can do this by clicking a job and choosing "Clone Job". Just as before note the "-ui" ending. You have a fallback again should you run out of time. This job is name "acc-day-glue-lab39-ui". You can also use this job for reference, even though it is a non UI job. We already aggregated "amount" by "trader_id" in one stream, but in this job we will enhance it by aggregating "amount" by "currency" (ccy) in another stream.</p>
+<p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Jobs Console</a> and clone the job from Lab 37, rename it to "acc-day-glue-lab39-ui", you can do this by clicking a job and choosing "Clone Job". Just as before note the "-ui" ending. You have a fallback again should you run out of time. This job is name "acc-day-glue-lab39-ui". You can also use this job for reference, even though it is a non UI job. We already aggregated "amount" by "trader_id" in one stream, but in this job we will enhance it by aggregating "amount" by "currency" (ccy) in another stream.</p>
 <p>Add an additional "Aggregator" as in "lab37" and configure the existing S3 source bucket as parent node.</p>
 <img src="images/lab39-1.png" class="mediumImages" alt="" />
 <p>Configure the new aggregator to aggregate amount by currency.</p>
@@ -250,27 +257,24 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 
 <h1>Lab 40 - Generate PII</h1>
 <p>In this exercise we will be generating PII data. We are simulating a common situation for GDPR, where deletion of information is requested by an individual. We will be generating 1M rows containing synthetic bank accounts information and Danish CPR numbers, which qualifies as PII and GDPR data.</p>
-<p>Run the job "Lab 40".</p>
+<p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Job Console</a> find and run the job "acc-day-glue-lab40".</p>
 <p>Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.</p>
-<p>Verify that the file "synthetic-pii.csv" has been generated in the "trade" bucket.</p>
+<p>Verify that the file "synthetic-pii.csv" has been generated in the "acc-day-glue-trade-*" bucket in the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a>.</p>
 <p>Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
 <p>Verify that it contains exactly 1M rows if you deduct headers and empty lines at the end.</p>
 
 <h1>Lab 41 - Cleanup PII</h1>
-<p>
-    In this lab we will be removing selected individual PII as explained in the previous lab.
-    Run the job<br/>
-    Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.<br/>
-    Verify that the file "synthetic-pii.csv" has been generated in the "trade" bucket.<br/>
-    Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count<br/>
-    Verify that it contains exactly 999997 (1M-3) rows if you deduct headers and empty lines at the end<br/>
-</p>
+<p>In this lab we will be removing selected individual PII as explained in the previous lab.</p>
+<p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Job Console</a> find and run the job "acc-day-glue-lab41".</p>
+<p>Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.</p>
+<p>Verify that the file "synthetic-pii-cleaned.csv" has been generated in the "acc-day-glue-trade-*" bucket in the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a>.</p>
+<p>Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
+<p>Verify that it contains exactly 999997 (1M-3) rows if you deduct headers and empty lines at the end.</p>
 
 <h1>Lab 42 - Create table for performance metrics</h1>
 <p>
-    Performance and metrics are an important part of understanding your ETL jobs. AWS Glue shows a number of metrics related to runtime, status, CPU, memory and more. Compute nodes backing AWS Glue will only run when used to reduce costs. This means that for short running jobs (a few minutes or seconds), the warm up time has a big impact on the total time spent. In order to better understand what takes time, we can easily add more metrics to CloudWatch or any place that we desire to log such metrics.<br/>
-    In the following labs we will be gathering such metrics for some of the jobs that we previously created.<br/>    
-</p>
+Performance and metrics are an important part of understanding your ETL jobs. AWS Glue shows a number of metrics related to runtime, status, CPU, memory and more. Compute nodes backing AWS Glue will only run when used to reduce costs. This means that for short running jobs (a few minutes or seconds), the warm up time has a big impact on the total time spent. In order to better understand what takes time, we can easily add more metrics to CloudWatch or any place that we desire to log such metrics.</p>
+<p>In the following labs we will be gathering such metrics for some of the jobs that we previously created.</p>
 <p>Let us start by creating a table for holding the metrics in the postresql database.</p>
 <p>Login to psql as in the previous labs, and create a table as per the code below.</p>
     <div class="code">
@@ -281,7 +285,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
         entry_time timestamp
         );<br/>
     </div>
-</p>
+<p>Move on to the next exercise.</p>
 
 <h1>Lab 43 - Collect performance metrics</h1>
 <p>We now have our table in place, and it is time to collect some metrics from jobs run in previous labs.</p>
@@ -302,7 +306,7 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>Also be aware that you will have to use "magics" in order to configure the VPC connection that we have used in many of the previous labs. Can you figure out how to configure that?</p>
 
 
-<p>Congratulations, you made it through all the labs. Good work and please continue to do great things with AWS.</p>
+<p>Congratulations, you made it through all the labs. Good work and please continue to do great things with AWS Glue.</p>
 
 <img src="images/badge_2.jpg">
 
