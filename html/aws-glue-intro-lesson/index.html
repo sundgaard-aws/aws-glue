@@ -322,7 +322,8 @@ Note the timings. Then up the number of workers to 6, on the job details tab. Ru
 <img src="images/crawler-run.png">
 
 <h1>Lab 16 - Create an AWS Glue Crawler for MySQL</h1>
-<p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relational database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now. We will be adding two more tables before crawling the database.</p>
+<p>This time we will be creating a crawler for MySQL, which is a bit different from the crawler we just created for DynamoDB. When creating a crawler for MySQL, or any other relational database that has the concept of schemas and multiple tables, you can decide whether you want to crawl just a specific table, a specific schema or the entire database. In this lab we will be crawling the entire database as it has only one table for now.</p>
+<p>We will be adding two more tables before crawling the database.</p>
 <p>Start by connecting to the MySQL database through the Cloud9 termnial. Make sure that the <a href="https://eu-west-1.console.aws.amazon.com/vpc/home?region=eu-west-1#securityGroups:" target="_blank">Secruity Group</a> for Cloud9 has access on the MySQL port for the Security Group for MySQL, if you did not already do this in 'Lab6'. If you forget this, your connection attemp will time out. Run the code below to connect to the database. Remember to replace the values with the right information for your database instance. You can find these using <a herf="https://eu-west-1.console.aws.amazon.com/secretsmanager" target="_blank">Secrets Manager</a>.
 </p>
 
@@ -354,21 +355,49 @@ create table counterparty (<br/>
 <br/>
 </div>
 
-<p>Just like we did with the DynamoDB crawler, go through the AWS Glue Crawler wizard, but this time you will need to choose JDBC as the datastore. Also you will need to use the connection we created earlier, to reach MySQL as it runs inside a VPC, and you will need to choose the correct IAM Role and Security Group. See if you can figure it out yourself. Below is a screenshot that will guide you a bit. If you get stuck ask for help.</p>
+<p>Just like we did with the DynamoDB crawler, go through the AWS Glue Crawler wizard, but this time you will need to choose JDBC as the datastore. Also you will need to use the connection we created earlier, to reach MySQL as it runs inside a VPC, and you will need to choose the correct IAM Role and Security Group.</p>
 
-<img src="images/crawler-mysql-add-data-store.png" alt="">
+<!--<img src="images/crawler-mysql-add-data-store.png" alt="">-->
+<p>Create a new Glue connection using JDBC and name it "acc-day-glue-mysql-conn".</p>
+    <img src="images/lab16-1.png" class="mediumImages" alt=""/>
 
-<p>Once you complete the wizard, the crawler should will shot on the crawlers page. Select the crawler and choose 'Run crawler' or click the 'Run it now' button inside the green banner. Wait for the crawler to complete the run. Click the '2' under the 'Tables added' column, and investigate the table meta data. As we are crawling the entire database, Glue will find two tables as we added two more tables. The third table is not crawled as it has no data yet.</p>
+    <p>Use the following string for the JDBC part and replace where needed (such as [replace-with-your-settings]). Also remember to add username and password, you can find these information from Secrets Manager Console. Next specify the "acc-day-glue-vpc" VPC, and the private subnet "acc-day-glue-private-sne". Finally attach the two security groups "acc-day-glue-vpc-network-conn-sg" and "acc-day-glue-rds-mysql-sg".</p>
+    <div class="code">
+        jdbc:mysql://acc-day-glue-trade-mart-rds.[replace-with-your-settings].eu-west-1.rds.amazonaws.com:3306/tradedb<br/>
+    </div>
+    <img src="images/lab16-2.png" class="mediumImages" alt=""/>
+    <p>Verify the settings.</p>
+    <img src="images/lab16-3.png" class="mediumImages" alt=""/>
+
+    <p>Next create a new Glue crawler based on the connection that we just created. Specify crawler name "acc-day-glue-mysql-crawler"</p>
+    <img src="images/lab16-4.png" class="mediumImages" alt=""/>
+    <p>Leave all as default.</p>
+    <img src="images/lab16-5.png" class="mediumImages" alt=""/>
+    <p>Choose JDBC and select the connection "aurora-glue-conn" in the connection drop down. Set include path to tradedb/%</p>
+    <img src="images/lab16-6.png" class="mediumImages" alt=""/>
+    <p>Leave as "No" as click next.</p>
+    <img src="images/lab16-7.png" class="mediumImages" alt=""/>
+    <p>Choose the execution role "acc-day-glue-execution-role"</p>
+    <img src="images/lab16-8.png" class="mediumImages" alt=""/>
+    <p>Leave as "Run on demand".</p>
+    <img src="images/lab16-9.png" class="mediumImages" alt=""/>
+    <p>Select the database "acc-day-glue-database" from the drop down that you already created, or created it at this time by clicking "Add database" and name it "acc-day-glue-database". Type "mysql_" as the prefix.</p>
+    <img src="images/lab16-10.png" class="mediumImages" alt=""/>
+    <p>Verify the settings and click "Finish" if everything looks OK.</p>
+    <img src="images/lab16-11.png" class="mediumImages" alt=""/>
+    <p>From the Crawlers page select the crawler and run it. Wait for crawler to complete, and under <a href="https://eu-west-1.console.aws.amazon.com/glue/home?region=eu-west-1#catalog:tab=tables" target="_blank">tables</a> verify that it has found the "mysql_tradedb_trade" table.</p>
+
+<p>As we are crawling the entire database, Glue will find two tables as we added two more tables. The third table is not crawled as it has no data yet.</p>
 
 <h1>Lab 17 - Create a job using the UI</h1>
 <p>In this lab we will be investigating how to use the AWS Glue UI. We will create a job using the UI for transferring data from the source table 'cpty' to the target table 'counterparty'. The two tables were already created in the previous exercise.<p>
 
 <p>
-    In this exercise it is time to test some of the things you have learned so far. See if you can figure out how to create the job yourself using the UI.<br/><br/>
-    Create a new Glue visual job using the wizard. Name your job 'acc-day-glue-lab17'.<br/><br/>
+    In this exercise it is time to test some of the things you have learned so far. See if you can figure out how to create the job yourself using the UI.</p>
+    <p>Create a new Glue visual job using the wizard. Name your job 'acc-day-glue-lab17'.</p>
     As we will be working with bookmarks in the next lab, for this lab we will disable bookmarks. In the job settings tab, scroll down to 'Bookmarks' and choose the option 'Disable'. While on the settings tab also ensure that the number of workers are set to 2, timeout to 20 minutes, and retry attempts to 0. Scroll down to the advanced section and ensure that you add the "acc-day-glue-vpc-conn" as a connection. Without this your connection to the database will time out. Finally specify the role for the job being the "acc-day-glue-execution-role".<br/><br/>
-    You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. This means that you can choose them from the Glue database and table drop downs instead of specifying all the details again.<br/><br/>
-    Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
+    <p>You will be using MySQL as both source and target, as they are already crawled both endpoints will already exist, and thus be known to Glue and the Glue UI. This means that you can choose them from the Glue database and table drop downs instead of specifying all the details again.</p>
+    <p>Also note that the column names in the two tables are not the same. You will need to make sure that the mapping takes care of this.</p>
 <p>
     When you are done configuring the job, save it and run the job using the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?#/jobs" target="_blank">AWS Glue Console</a> or using the AWS CLI as shown below.
 </p>
@@ -386,8 +415,14 @@ create table counterparty (<br/>
 </div>
 
 <h1>Lab 18 - Run a delta job using bookmarks (optional)</h1>
-<p>
-    Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store. In this lab you will be using the job that you created in the previous lab as a starting point. Start by cloning the job, you can do this directly using the UI. Rename the job to 'acc-day-glue-lab18'. Next change the bookmark settings in the job details tab to 'Enabled'. Run the new job and verify the contents of the target table has not changed. As we have defined primary keys for the tables, AWS Glue will use these to keep track of what has been transferred already.
+<p>Bookmarks works differently depending on your source data store. In this lab we will investigating how to use bookmarks with a relation database as a source data store. In this lab you will be using the job that you created in the previous lab as a starting point. Start by cloning the job, you can do this directly using the UI. Rename the job to 'acc-day-glue-lab18'. Next change the bookmark settings in the job details tab to 'Enabled'.</p> 
+
+<p>As bookmark state changes when context changes (set to job name for these labs) the new job is not aware that we loaded the rows already in the previous lab. For this reason we will start by truncating the target table "counterparty".</p>
+<div class="code">
+    truncate table counterparty;<br/>
+</div>
+
+<p>Now run the new job and verify the contents of the target table has not changed. As we have defined primary keys for the tables, AWS Glue will use these to keep track of what has been transferred already.
 </p>
 <p>
     Insert a few more rows in the source table. Use the MySQL terminal as you did previously and run the commands below.

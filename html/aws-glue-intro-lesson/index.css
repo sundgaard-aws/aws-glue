@@ -17,3 +17,13 @@ div.code {
 div.footer {
     font-size: 0.7rem; text-align: center; width:100%; background-color: #232F3E; color: #ffffff; height:4rem; line-height:4rem; margin:0rem; padding:0rem;
 }
+
+.mediumImages {
+    width: 700px;
+    margin-top: 10px; margin-bottom: 10px; border: solid 2px #eb821f;
+}
+
+.tallImage {
+    height: 700px;
+    margin-top: 10px; margin-bottom: 10px; border: solid 2px #eb821f;
+}
