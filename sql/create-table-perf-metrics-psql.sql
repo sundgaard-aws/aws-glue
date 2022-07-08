@@ -1,0 +1,1 @@
+create table perf_metrics ( entry_id int PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY, job_name varchar(80), duration decimal, entry_time timestamp );

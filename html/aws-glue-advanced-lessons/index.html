@@ -333,10 +333,14 @@ Performance and metrics are an important part of understanding your ETL jobs. AW
 <h1>Lab 43 - Collect performance metrics</h1>
 <p>We now have our table in place, and it is time to collect some metrics from jobs run in previous labs.</p>
 <p>Pick five or more jobs that you found pariculary interesting.</p>
-<p>In the script part of those jobs add a call to startStopwatch() and stopStopwatch() where you find it appropriate. As a rule of thumb you would like to surround the time consuming blocks of code. If you are unsure, you can add the first call just after function definitions and the stop just before the job.commit statement.</p>
+<p>In the script part of those jobs add a call to "startStopwatch()" and "stopStopwatch()" where you find it appropriate. As a rule of thumb you would like to surround the time consuming blocks of code. If you are unsure, you can add the first call just after function definitions and the stop just before the job.commit statement.</p>
+<p>In order to call the methods you will need to include the Python module we updated in "lab35".</p>
+<p>Below is a code snippet showing how the methods can be used once you have included the Python module.</p>
 <div class="code">
-    startStopwatch()<br/>
-    stopStopwatch()<br/>
+    from generic_glue_functions import *
+    id=startStopwatch()
+    print("hello")
+    stopStopwatch(id)
 </div>
 
 
