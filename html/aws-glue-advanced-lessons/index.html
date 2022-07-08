@@ -63,16 +63,23 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>In this exercise we will be creating partitions in an S3 target bucket. The source will be a CSV file containing 20M rows of trade data.</p>
 <p>We have not specified a partition key in this lab, but AWS Glue are partitioning even though to optimize performance.</p>
 <p>Run the job and wait for it to complete.</p>
-<p>Notice how data is structured in separate partitions (multiple files) in the target <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3</a> folder.</p>
-    Download and open one or more of the files to verify the contents. You may have to rename the downloaded files in order to open them using your favorite editor.<br/>
-</p>
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a> and search for the bucket name "acc-day-glue-trade-s3", as per screenshot below.</p>
+<img src="images/lab29-1.png" class="mediumImages" alt="" />
+<p>Click the bucket link. Notice how data is structured in separate partitions (multiple files) in the target S3 folder.</p>
+<p>Download and open one or more of the files to verify the contents. You may have to rename the downloaded files in order to open them using your favorite editor</p>
 
 <h1>Lab 30 - Write partitioning with Amazon S3</h1>
 <p>In this exercise we will be creating partitions in an S3 target bucket. The source will again be a CSV file containing 20M rows of trade data.</p>
 <p>This time we have specified currency ("ccy") as the parition key on the target bucket.</p>
 <p>Run the job and check the status.</p>
-<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 console</a> and find the right bucket. You can see this from the "Script" tab of the Glue job you just ran.</p>
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 console</a> and search for the bucket name "acc-day-glue-trade-s3", as per screenshot below. Click the bucket link.</p>
+<img src="images/lab30-1.png" class="mediumImages" alt="" />
+<p>Search for "huge-by-ccy/" on the new screen.</p>
+<img src="images/lab30-2.png" class="mediumImages" alt="" />
+<p>Here we see our four currency paritions. Click any of them.</p>
+<img src="images/lab30-3.png" class="mediumImages" alt="" />
 <p>Notice again how data is first divded in to multiple partitions, one per currency, and next it has multiple files per partition. Glue is doing this in order to parallelize work and optimize performance.</p>
+<img src="images/lab30-4.png" class="mediumImages" alt="" />
 <p>Download and open one or more of the files to verify the contents. The files are CSV files, and you may have to rename them after downloading them in order to open them in your favorite editor.</p>
 
 <h1>Lab 31 - Merging files in partitions with Amazon S3</h1>
@@ -100,11 +107,18 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     <div class="code">
         sudo yum install -y postgresql-libs.x86_64 postgresql.x86_64<br/>        
     </div>
-    <p>Connect to the database in <a href="https://eu-west-1.console.aws.amazon.com/cloud9/home?region=eu-west-1" target="_blank">Cloud9</a> by running the command below:</p>
+    <p>Connect to the database in <a href="https://eu-west-1.console.aws.amazon.com/cloud9/home?region=eu-west-1" target="_blank">Cloud9</a> by running the command below, but first remember to replace the marked section with the hostname for your database. You can find this information using <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/listsecrets?region=eu-west-1&search=all%3Daurora" target="_blank">Secrets Manager</a> and searching four "aurora" (may already be typed in for you).</p>
+    <p>Next click on the link for the secret.</p>
+    <img src="images/lab33-12.png" class="mediumImages" alt=""/>
+    <p>Click "Retrieve secret value".</p>
+    <img src="images/lab33-13.png" class="mediumImages" alt=""/>
+    <p>Click the icon in front of the hostname to copy it.</p>
+    <img src="images/lab33-14.png" class="mediumImages" alt=""/>
+    <p>Replace the hostname part from the string below.</p>
     <div class="code">        
         psql --host acc-day-glue-tm-aurora-cluster.cluster-[replace].eu-west-1.rds.amazonaws.com --user postgres<br/>
     </div>
-    <p>When prompted for the pw, navigate to Secrets Manager and find the secret for the new Aurora DB.</p>
+    <p>When prompted for the password, navigate to <a href="https://eu-west-1.console.aws.amazon.com/secretsmanager/listsecrets?region=eu-west-1&search=all%3Daurora" target="_blank">Secrets Manager</a> and find the same secret as before and "Retrieve secret value", but this time copy the "Password" instead from the secret.</p>
     <p>Paste the password in the "psql" prompt.</p>
     <p>Once connected to the database prompt, switch to the proper DB.</p>
     <div class="code">
@@ -164,7 +178,9 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     <img src="images/lab34-8.png" class="mediumImages" alt=""/>
     <p>Ensure that the output schema for the "Apply mapping" transform looks like below.</p>
     <img src="images/lab34-9.png" class="mediumImages" alt=""/>
-    <p>Your UI job should look like the one below.</p>
+    <p>The target element details should point to the "aurora_db_public_trade" table as per the screenshot below.</p>
+    <img src="images/lab34-15.png" class="mediumImages" alt=""/>
+    <p>Your final UI job should look like the one below.</p>
     <img src="images/lab34-10.png" class="mediumImages" alt=""/>
     <p>Adjust settings as per screenshot below.</p>
     <img src="images/lab34-11.png" class="mediumImages" alt=""/>
@@ -201,10 +217,11 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     <p>Go to the "Job details" tab.</p>
     <p>Scroll down to the "Advanced" section and expand it. Scroll down to the "Python library path" field.</p>
     <p>Open the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 Console</a> in another tab.</p>
-    Download the <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">Python module</a> to your local computer (right click the link and choose save link as).<br/><br/>
-    <p>Go to the "acc-day-glue-input-*" bucket.</p>
-    <p>Create a new folder called "libs".</p>
-    <img src="images/lab35-1.png" class="mediumImages" alt="" />
+    <p>Download the <a href="https://github.com/sundgaard-aws/aws-glue/raw/main/python/trade-import/generic_glue_functions.py">Python module</a> to your local computer (right click the link and choose save link as).</p>
+    <p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1&region=eu-west-1" target="_blank">S3 Console</a> and search for "acc-day-glue-input". Click the bucket link.</p>
+    <img src="images/lab35-6.png" class="mediumImages" alt="" />
+    <p>Create a new folder by clicking the "Create folder" button and call it "libs". Click "Create folder".</p>
+    <img src="images/lab35-7.png" class="mediumImages" alt="" />
     <p>Upload the file "generic_glue_functions.py" to the "acc-day-glue-input-*" bucket in the "/libs/" folder by dragging in the file from your local download folder.</p>
     <img src="images/lab35-2.png" class="mediumImages" alt="" />
     <p>Click the link of the newly uploaded file object and copy the full S3 path from the <a href="https://s3.console.aws.amazon.com/s3/home?region=eu-west-1#" target="_blank">S3 Console</a>.</p>
@@ -226,7 +243,9 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
     <img src="images/lab36-2.png" class="mediumImages" alt="" />
     <p>Wait for the notebook to finish start up.</p>
     <img src="images/lab36-3.png" class="mediumImages" alt="" />
-    <p>Collapse the top description by clicking the blue bar on the side, and paste in the code from <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/python/trade-import/lab36-notebook.py">this file</a> in a new cell. You can create a new cell by clicking the "+" next to the "Save" icon, or by pressing ALT+ENTER in an existing cell. When done run the cell by placing the cursor in the cell and hit SHIFT+ENTER.</p>
+    <p>Collapse the top description by clicking the blue bar on the side. Click inside the predefined cell as per the screenshot below, and hit ALT+ENTER to execute the cell contents and create a new cell.</p>
+    <img src="images/lab36-5.png" class="mediumImages" alt="" />
+    <p>Paste in the code from <a href="https://raw.githubusercontent.com/sundgaard-aws/aws-glue/main/python/trade-import/lab36-notebook.py" target="_blank">this file</a> in the new cell. You can also create a new cell by clicking the "+" next to the "Save" icon. When done run the contents of the cell we just filled in by placing the cursor in the cell and hitting SHIFT+ENTER.</p>
     <img src="images/lab36-4.png" class="mediumImages" alt="" />
     <p>We are actually reading from a file from a previous lab and printing that. At this point you can change the input file or start manipuliting data just by adding your logic in new cells (or the same for that matter), and running them. We will be working more with Notebook based jobs in some of the remaining exercises, but feel free to work with and transform, clean and manipulate data further using this notebook before you continue.</p>
 </p>    
@@ -275,16 +294,24 @@ Before beginning these lessons, please ensure that all AWS Glue intro lessons ha
 <p>In this exercise we will be generating PII data. We are simulating a common situation for GDPR, where deletion of information is requested by an individual. We will be generating 1M rows containing synthetic bank accounts information and Danish CPR numbers, which qualifies as PII and GDPR data.</p>
 <p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Job Console</a> find and run the job "acc-day-glue-lab40".</p>
 <p>Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.</p>
-<p>Verify that the file "synthetic-pii.csv" has been generated in the "acc-day-glue-trade-*" bucket in the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a>.</p>
-<p>Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a> and search for the bucket "acc-day-glue-trade-s3". Click the bucket link to enter it.</p>
+<img src="images/lab40-1.png" class="mediumImages" alt="" />
+<p>Search for the file "synthetic-pii.csv" and download it from the S3 console.</p>
+<img src="images/lab40-2.png" class="mediumImages" alt="" />
+<p>Open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
 <p>Verify that it contains exactly 1M rows if you deduct headers and empty lines at the end.</p>
 
 <h1>Lab 41 - Cleanup PII</h1>
 <p>In this lab we will be removing selected individual PII as explained in the previous lab.</p>
 <p>Navigate to the <a href="https://eu-west-1.console.aws.amazon.com/gluestudio/home?region=eu-west-1#/jobs" target="_blank">Glue Job Console</a> find and run the job "acc-day-glue-lab41".</p>
 <p>Check the status of the job, and note the actual duration of the "true" processing in the CloudWatch logs.</p>
-<p>Verify that the file "synthetic-pii-cleaned.csv" has been generated in the "acc-day-glue-trade-*" bucket in the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a>.</p>
-<p>Download the file from the S3 console and open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
+<p>Verify that the file  has been generated in the "acc-day-glue-trade-*" bucket in the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a>.</p>
+
+<p>Navigate to the <a href="https://s3.console.aws.amazon.com/s3/buckets?region=eu-west-1" target="_blank">S3 Console</a> and search for the bucket "acc-day-glue-trade-s3". Click the bucket link to enter it.</p>
+<img src="images/lab41-1.png" class="mediumImages" alt="" />
+<p>Search for the file "synthetic-pii-cleaned.csv" and download it from the S3 console.</p>
+<img src="images/lab41-2.png" class="mediumImages" alt="" />
+<p>Open it in Notepad++, Excel, VSCode or any editor that supports line count.</p>
 <p>Verify that it contains exactly 999997 (1M-3) rows if you deduct headers and empty lines at the end.</p>
 
 <h1>Lab 42 - Create table for performance metrics</h1>
