@@ -1,6 +1,7 @@
 import pandas as pd
-from datetime import datetime
 import boto3
+from datetime import datetime
+from generic_glue_functions import getParameter
 
 print("started row deletion at ["+str(datetime.now())+"]...")
 s3 = boto3.client("s3") 
