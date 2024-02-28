@@ -1,3 +1,4 @@
+#region imports
 import sys
 import boto3
 import logging
@@ -8,6 +9,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from botocore.exceptions import ClientError
+#endregion
 
 # define logging
 MSG_FORMAT = '%(asctime)s %(levelname)s %(name)s: %(message)s'

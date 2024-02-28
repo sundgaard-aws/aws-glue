@@ -12,7 +12,7 @@ guidA=df.iloc[2]
 guidB=df.iloc[125000]
 guidC=df.iloc[500000]
 print("Random GUID to delete ["+str(guidA.name)+"]")
-print("Random GUID to delete ["+str(guidB.name)+"]")
+print("Random GUID to delete ["+str(guidB.name)+"]")a
 print("Random GUID to delete ["+str(guidC.name)+"]")
 
 # Delete rows. Parameter is the index value for the index column specified above
